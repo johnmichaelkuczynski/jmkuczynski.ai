@@ -1,5 +1,6 @@
 import { Router, type IRouter } from "express";
 import { ChannelKuczynskiBody, ChannelKuczynskiResponse } from "@workspace/api-zod";
+import { getSession } from "../lib/session";
 
 const router: IRouter = Router();
 
@@ -42,6 +43,11 @@ function extractReply(payload: unknown): string | null {
 }
 
 router.post("/channel", async (req, res): Promise<void> => {
+  if (!getSession(req)) {
+    res.status(401).json({ error: "Please sign in with Google to channel Kuczynski." });
+    return;
+  }
+
   if (rateLimited(req.ip ?? "unknown")) {
     res.status(429).json({ error: "Too many inquiries. Please wait a few minutes and try again." });
     return;

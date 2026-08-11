@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useDialogue } from '@/contexts/DialogueContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { X, Maximize2, Minimize2, GripHorizontal } from 'lucide-react';
 import { useChannelKuczynski } from '@workspace/api-client-react';
 import { cn } from '@/lib/utils';
@@ -29,6 +30,7 @@ function MessageText({ content }: { content: string }) {
 
 export function DialogueWindow() {
   const { isOpen, closeDialogue, history, setHistory } = useDialogue();
+  const { user, promptLogin } = useAuth();
   const channel = useChannelKuczynski();
   
   const [input, setInput] = useState('');
@@ -120,6 +122,10 @@ export function DialogueWindow() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || channel.isPending) return;
+    if (!user) {
+      promptLogin();
+      return;
+    }
 
     const userMessage = input.trim();
     setInput('');

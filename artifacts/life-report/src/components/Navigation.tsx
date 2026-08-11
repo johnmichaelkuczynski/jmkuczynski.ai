@@ -3,10 +3,12 @@ import { Link, useLocation } from 'wouter';
 import { BookOpen, Calendar, Settings, Archive, MessageSquare, Mail } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useDialogue } from '@/contexts/DialogueContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 export function Navigation({ children }: { children: ReactNode }) {
   const [location] = useLocation();
   const { openDialogue } = useDialogue();
+  const { user, loading, login, logout } = useAuth();
 
   const navItems = [
     { href: '/', label: 'Dossier', icon: BookOpen },
@@ -65,7 +67,29 @@ export function Navigation({ children }: { children: ReactNode }) {
             </button>
           </div>
         </nav>
-        <div className="p-4 border-t border-border">
+        <div className="p-4 border-t border-border space-y-3">
+          {!loading && (
+            user ? (
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[10px] font-mono text-muted-foreground truncate" title={user.email}>
+                  {user.name}
+                </span>
+                <button
+                  onClick={logout}
+                  className="text-[10px] font-mono uppercase tracking-widest text-primary hover:underline shrink-0"
+                >
+                  Sign out
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={login}
+                className="w-full text-[10px] font-mono uppercase tracking-widest text-primary border border-primary/30 hover:bg-primary/5 py-2 transition-colors"
+              >
+                Sign in with Google
+              </button>
+            )
+          )}
           <p className="text-[10px] text-muted-foreground font-mono text-center">
             Updated {new Date().toLocaleDateString()}
           </p>

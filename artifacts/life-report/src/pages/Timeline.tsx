@@ -4,6 +4,7 @@ import { CategoryBadge } from '@/components/CategoryBadge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
 import { Search, Link as LinkIcon, Paperclip } from 'lucide-react';
+import { GatedLink } from '@/components/GatedLink';
 
 export function Timeline() {
   const { data: timeline, isLoading } = useGetTimeline();
@@ -103,22 +104,22 @@ export function Timeline() {
                      {item.metric && <span className="text-primary font-bold bg-primary/5 px-1.5 py-0.5">{item.metric}</span>}
                      
                      {item.links?.map((lnk, i) => (
-                       <a key={i} href={lnk.url} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-foreground hover:text-primary">
+                       <GatedLink key={i} href={lnk.url} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-foreground hover:text-primary">
                          <LinkIcon className="w-3 h-3" />
                          {lnk.label}
-                       </a>
+                       </GatedLink>
                      ))}
                      {item.filePath && (
-                       <a href={`/api/storage${item.filePath}`} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-primary font-bold">
+                       <GatedLink href={`/api/storage${item.filePath}`} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-primary font-bold">
                          <Paperclip className="w-3 h-3" />
                          PDF
-                       </a>
+                       </GatedLink>
                      )}
                      {item.link && (!item.links || item.links.length === 0) && (
-                       <a href={item.link} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-foreground hover:text-primary">
+                       <GatedLink href={item.link} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-foreground hover:text-primary">
                          <LinkIcon className="w-3 h-3" />
                          Link
-                       </a>
+                       </GatedLink>
                      )}
                    </div>
                 </div>

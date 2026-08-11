@@ -9,6 +9,7 @@ import { Category } from '@workspace/api-client-react';
 import { CategoryBadge } from '@/components/CategoryBadge';
 import { MapPin, Globe, Mail, Building, TrendingUp, Award, ExternalLink, Search, Link as LinkIcon, Paperclip, MessageSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { GatedLink } from '@/components/GatedLink';
 import { useDialogue } from '@/contexts/DialogueContext';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
@@ -201,20 +202,20 @@ export function Home() {
                   )}
                   <div className="flex flex-wrap gap-3 mt-2">
                     {item.links?.map((lnk, i) => (
-                      <a key={i} href={lnk.url} target="_blank" rel="noreferrer" className="text-xs flex items-center gap-1 text-muted-foreground hover:text-primary transition-colors">
+                      <GatedLink key={i} href={lnk.url} target="_blank" rel="noreferrer" className="text-xs flex items-center gap-1 text-muted-foreground hover:text-primary transition-colors">
                         {lnk.label} <ExternalLink className="w-3 h-3" />
-                      </a>
+                      </GatedLink>
                     ))}
                     {item.filePath && (
-                      <a href={`/api/storage${item.filePath}`} target="_blank" rel="noreferrer" className="text-xs flex items-center gap-1 text-primary font-medium hover:underline transition-colors">
+                      <GatedLink href={`/api/storage${item.filePath}`} target="_blank" rel="noreferrer" className="text-xs flex items-center gap-1 text-primary font-medium hover:underline transition-colors">
                         <Paperclip className="w-3 h-3" /> Paper (PDF)
-                      </a>
+                      </GatedLink>
                     )}
                     {/* Fallback legacy link */}
                     {item.link && (!item.links || item.links.length === 0) && (
-                      <a href={item.link} target="_blank" rel="noreferrer" className="text-xs flex items-center gap-1 text-muted-foreground hover:text-primary transition-colors">
+                      <GatedLink href={item.link} target="_blank" rel="noreferrer" className="text-xs flex items-center gap-1 text-muted-foreground hover:text-primary transition-colors">
                         View Source <ExternalLink className="w-3 h-3" />
-                      </a>
+                      </GatedLink>
                     )}
                   </div>
                 </div>
@@ -299,22 +300,22 @@ export function Home() {
                  {item.metric && <span className="text-primary font-bold bg-primary/5 px-1.5 py-0.5">{item.metric}</span>}
                  
                  {item.links?.map((lnk, i) => (
-                   <a key={i} href={lnk.url} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-foreground hover:text-primary hover:underline underline-offset-2">
+                   <GatedLink key={i} href={lnk.url} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-foreground hover:text-primary hover:underline underline-offset-2">
                      <LinkIcon className="w-3 h-3" />
                      {lnk.label}
-                   </a>
+                   </GatedLink>
                  ))}
                  {item.filePath && (
-                   <a href={`/api/storage${item.filePath}`} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-primary hover:underline underline-offset-2 font-bold">
+                   <GatedLink href={`/api/storage${item.filePath}`} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-primary hover:underline underline-offset-2 font-bold">
                      <Paperclip className="w-3 h-3" />
                      PDF
-                   </a>
+                   </GatedLink>
                  )}
                  {item.link && (!item.links || item.links.length === 0) && (
-                   <a href={item.link} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-foreground hover:text-primary hover:underline underline-offset-2">
+                   <GatedLink href={item.link} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-foreground hover:text-primary hover:underline underline-offset-2">
                      <LinkIcon className="w-3 h-3" />
                      Link
-                   </a>
+                   </GatedLink>
                  )}
               </div>
             </div>

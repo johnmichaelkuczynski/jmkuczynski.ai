@@ -13,6 +13,8 @@ import { Timeline } from '@/pages/Timeline';
 import { Manage } from '@/pages/Manage';
 import { DialogueProvider } from '@/contexts/DialogueContext';
 import { DialogueWindow } from '@/components/DialogueWindow';
+import { AuthProvider } from '@/contexts/AuthContext';
+import { LoginPrompt } from '@/components/LoginPrompt';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -47,13 +49,16 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
+        <AuthProvider>
         <DialogueProvider>
           <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
             <Router />
           </WouterRouter>
           <DialogueWindow />
+          <LoginPrompt />
           <Toaster />
         </DialogueProvider>
+        </AuthProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );
