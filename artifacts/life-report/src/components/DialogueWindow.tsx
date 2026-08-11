@@ -1,0 +1,279 @@
+import React, { useRef, useEffect, useState } from 'react';
+import { useDialogue } from '@/contexts/DialogueContext';
+import { X, Maximize2, Minimize2, GripHorizontal } from 'lucide-react';
+import { useChannelKuczynski } from '@workspace/api-client-react';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+
+function MessageText({ content }: { content: string }) {
+  const paragraphs = content.split(/\n+/).filter(p => p.trim() !== '');
+  return (
+    <div className="space-y-6">
+      {paragraphs.map((p, i) => {
+        const isQuote = p.startsWith('"') || p.startsWith('“') || p.startsWith("'") || p.startsWith('‘');
+        return (
+          <p 
+            key={i} 
+            className={cn(
+              "leading-relaxed", 
+              isQuote && "pl-6 border-l-2 border-primary/30 italic text-muted-foreground"
+            )}
+          >
+            {p}
+          </p>
+        );
+      })}
+    </div>
+  );
+}
+
+export function DialogueWindow() {
+  const { isOpen, closeDialogue, history, setHistory } = useDialogue();
+  const channel = useChannelKuczynski();
+  
+  const [input, setInput] = useState('');
+  const [isMaximized, setIsMaximized] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const windowRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [size, setSize] = useState({ w: 800, h: 600 });
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [history, channel.isPending]);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+      if (window.innerWidth >= 768 && position.x === 0 && position.y === 0) {
+        const w = Math.min(800, window.innerWidth - 64);
+        const h = Math.min(600, window.innerHeight - 64);
+        setSize({ w, h });
+        setPosition({ x: (window.innerWidth - w) / 2, y: (window.innerHeight - h) / 2 });
+      } else if (window.innerWidth >= 768) {
+        // Re-clamp on viewport changes so the window (and its resize handle) stays reachable
+        setSize(s => ({ w: Math.min(s.w, window.innerWidth), h: Math.min(s.h, window.innerHeight) }));
+        setPosition(p => ({
+          x: Math.max(0, Math.min(p.x, window.innerWidth - 200)),
+          y: Math.max(0, Math.min(p.y, window.innerHeight - 100)),
+        }));
+      }
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, [position.x, position.y]);
+
+  const dragStart = useRef({ x: 0, y: 0, posX: 0, posY: 0 });
+  const onDragPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (isMaximized || isMobile) return;
+    if ((e.target as HTMLElement).closest('button')) return;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    dragStart.current = { x: e.clientX, y: e.clientY, posX: position.x, posY: position.y };
+  };
+  const onDragPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+      const dx = e.clientX - dragStart.current.x;
+      const dy = e.clientY - dragStart.current.y;
+      const newX = Math.max(-size.w + 100, Math.min(window.innerWidth - 100, dragStart.current.posX + dx));
+      const newY = Math.max(0, Math.min(window.innerHeight - 100, dragStart.current.posY + dy));
+      setPosition({ x: newX, y: newY });
+    }
+  };
+  const onDragPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    e.currentTarget.releasePointerCapture(e.pointerId);
+  };
+
+  const resizeStart = useRef({ x: 0, y: 0, startW: 0, startH: 0 });
+  const onResizePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (isMaximized || isMobile) return;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    resizeStart.current = { x: e.clientX, y: e.clientY, startW: size.w, startH: size.h };
+  };
+  const onResizePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+      const dx = e.clientX - resizeStart.current.x;
+      const dy = e.clientY - resizeStart.current.y;
+      setSize({
+        w: Math.min(window.innerWidth - position.x, Math.max(400, resizeStart.current.startW + dx)),
+        h: Math.min(window.innerHeight - position.y, Math.max(300, resizeStart.current.startH + dy)),
+      });
+    }
+  };
+  const onResizePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    e.currentTarget.releasePointerCapture(e.pointerId);
+  };
+
+  if (!isOpen) return null;
+
+  const isFullScreen = isMobile || isMaximized;
+  const style: React.CSSProperties = isFullScreen
+    ? { top: 0, left: 0, right: 0, bottom: 0, width: '100%', height: '100%' }
+    : { top: position.y, left: position.x, width: size.w, height: size.h };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!input.trim() || channel.isPending) return;
+
+    const userMessage = input.trim();
+    setInput('');
+    setError(null);
+    
+    setHistory(prev => [...prev, { role: 'user', content: userMessage }]);
+
+    channel.mutate({
+      data: {
+        message: userMessage,
+        history: history as any, // API expects role as ChannelMessageRole string literal
+      }
+    }, {
+      onSuccess: (res) => {
+        setHistory(prev => [...prev, { role: 'assistant', content: res.reply }]);
+      },
+      onError: (err: any) => {
+        const errorMsg = err?.data?.error || err?.error || 'An error occurred while consulting the archive.';
+        setError(errorMsg);
+        setHistory(prev => prev.slice(0, -1));
+        setInput(userMessage);
+      }
+    });
+  };
+
+  return (
+    <div 
+      ref={windowRef}
+      style={style}
+      className={cn(
+        "fixed z-[100] flex flex-col bg-card border-border shadow-2xl overflow-hidden",
+        isFullScreen ? "border-0" : "border"
+      )}
+    >
+      <div 
+        className={cn(
+          "flex items-center justify-between px-4 py-3 bg-secondary text-secondary-foreground border-b border-border select-none",
+          !isFullScreen && "cursor-move"
+        )}
+        onPointerDown={onDragPointerDown}
+        onPointerMove={onDragPointerMove}
+        onPointerUp={onDragPointerUp}
+      >
+        <div className="flex items-center gap-3">
+          <GripHorizontal className="w-4 h-4 opacity-50" />
+          <img
+            src={`${import.meta.env.BASE_URL}avatar.png`}
+            alt="Kuczynski"
+            className="w-7 h-7 object-cover border border-primary/40"
+          />
+          <span className="font-mono text-xs uppercase tracking-widest font-bold text-primary">Channel: Kuczynski</span>
+        </div>
+        <div className="flex items-center gap-2">
+          {!isMobile && (
+            <button onClick={() => setIsMaximized(!isMaximized)} className="p-1 hover:bg-secondary-foreground/10 transition-colors">
+              {isMaximized ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+            </button>
+          )}
+          <button onClick={closeDialogue} className="p-1 hover:bg-destructive hover:text-destructive-foreground transition-colors">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+
+      <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 md:p-10 space-y-8 bg-background relative">
+        {history.length === 0 && !channel.isPending && (
+          <div className="flex flex-col items-center justify-center h-full text-center max-w-md mx-auto space-y-4 opacity-50 absolute inset-0 m-auto">
+            <p className="font-serif text-3xl">"The record is open."</p>
+            <p className="font-mono text-xs uppercase tracking-widest">Submit your inquiry to the digital corpus.</p>
+          </div>
+        )}
+        
+        <div className="max-w-4xl mx-auto space-y-12 pb-8">
+          {history.map((msg, i) => (
+            <div key={i} className={cn("flex flex-col", msg.role === 'user' ? "ml-auto items-end max-w-2xl" : "mr-auto items-start w-full")}>
+              <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest mb-2 px-1 flex items-center gap-2">
+                {msg.role === 'assistant' && (
+                  <img
+                    src={`${import.meta.env.BASE_URL}avatar.png`}
+                    alt="Kuczynski"
+                    className="w-6 h-6 object-cover border border-primary/40"
+                  />
+                )}
+                {msg.role === 'user' ? 'Inquiry' : 'Archive'}
+              </span>
+              <div className={cn(
+                "p-5 md:p-8",
+                msg.role === 'user' 
+                  ? "bg-card border border-border text-foreground font-sans text-sm md:text-base w-full" 
+                  : "bg-transparent text-foreground font-serif text-lg md:text-xl tracking-tight w-full"
+              )}>
+                <MessageText content={msg.content} />
+              </div>
+            </div>
+          ))}
+          
+          {channel.isPending && (
+            <div className="flex flex-col mr-auto items-start w-full animate-in fade-in duration-1000">
+              <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest mb-2 px-1 flex items-center gap-2">
+                <img
+                  src={`${import.meta.env.BASE_URL}avatar.png`}
+                  alt="Kuczynski"
+                  className="w-6 h-6 object-cover border border-primary/40"
+                />
+                Archive
+              </span>
+              <div className="p-5 md:p-8 font-serif text-lg md:text-xl tracking-tight text-muted-foreground flex flex-col gap-4">
+                 <div className="flex items-center gap-3">
+                   <div className="w-2 h-2 bg-primary rounded-none animate-pulse"></div>
+                   <span className="italic">Synthesizing the corpus...</span>
+                 </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {error && (
+        <div className="px-6 py-3 bg-destructive/10 border-t border-destructive text-destructive text-sm font-mono flex items-center justify-between">
+          <span>{error}</span>
+          <button onClick={() => setError(null)}><X className="w-4 h-4"/></button>
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="p-4 border-t border-border bg-card flex gap-4 items-end">
+        <textarea
+          value={input}
+          onChange={e => setInput(e.target.value)}
+          placeholder="Pose a philosophical inquiry..."
+          className="flex-1 max-h-48 min-h-[60px] bg-background border border-border p-3 font-sans text-sm focus:outline-none focus:border-primary resize-y"
+          onKeyDown={e => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              handleSubmit(e);
+            }
+          }}
+        />
+        <Button type="submit" disabled={!input.trim() || channel.isPending} className="h-[60px] px-8 bg-primary text-primary-foreground hover:bg-primary/90 font-mono uppercase tracking-widest text-xs rounded-none">
+          Send
+        </Button>
+      </form>
+
+      {!isFullScreen && (
+        <div 
+          className="absolute bottom-0 right-0 w-6 h-6 cursor-nwse-resize flex items-end justify-end p-1 text-muted-foreground opacity-50 hover:opacity-100"
+          onPointerDown={onResizePointerDown}
+          onPointerMove={onResizePointerMove}
+          onPointerUp={onResizePointerUp}
+        >
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+             <path d="M12 12H0L12 0V12Z" fill="currentColor" opacity="0.5"/>
+          </svg>
+        </div>
+      )}
+    </div>
+  );
+}

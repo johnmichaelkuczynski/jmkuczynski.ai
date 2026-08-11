@@ -1,0 +1,1 @@
+- [Dialogue window & channel proxy quirks](dialogue-window-quirks.md) — draggable headers must skip buttons; API errors live at err.data; channel proxy self-rate-limits to protect the shared key.

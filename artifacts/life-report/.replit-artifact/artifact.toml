@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Life Report"
+description = "A high-powered living resume platform for elite, prolific polymaths. Accomplishments — peer-reviewed articles, treatises, AI systems, patents, apps, and musical compositions — are presented not as a resume but as a continuously updated life report card, with a shareable public profile and a private workspace to add achievements as they happen."
+version = "1.0.0"
+id = "artifacts/life-report"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25929
+
+[services.development]
+run = "pnpm --filter @workspace/life-report run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/life-report", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/life-report/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25929"
+BASE_PATH = "/"

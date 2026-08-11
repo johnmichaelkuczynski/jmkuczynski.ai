@@ -1,0 +1,628 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: Life Report API - a living resume / life report card platform
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: profile
+    description: The person's identity and headline
+  - name: accomplishments
+    description: Accomplishment records
+  - name: insights
+    description: Aggregate views of the record
+  - name: Storage
+    description: Object storage upload and serving endpoints.
+  - name: channel
+    description: Dialogue with the Kuczynski bot via Genius 101.
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /profile:
+    get:
+      operationId: getProfile
+      tags: [profile]
+      summary: Get the profile
+      responses:
+        "200":
+          description: The profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profile"
+    put:
+      operationId: updateProfile
+      tags: [profile]
+      summary: Update the profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileUpdate"
+      responses:
+        "200":
+          description: Updated profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profile"
+  /accomplishments:
+    get:
+      operationId: listAccomplishments
+      tags: [accomplishments]
+      summary: List all accomplishments
+      responses:
+        "200":
+          description: All accomplishments, newest first
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Accomplishment"
+    post:
+      operationId: createAccomplishment
+      tags: [accomplishments]
+      summary: Create an accomplishment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AccomplishmentInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Accomplishment"
+  /accomplishments/{id}:
+    get:
+      operationId: getAccomplishment
+      tags: [accomplishments]
+      summary: Get one accomplishment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: The accomplishment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Accomplishment"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiMessage"
+    patch:
+      operationId: updateAccomplishment
+      tags: [accomplishments]
+      summary: Update an accomplishment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AccomplishmentUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Accomplishment"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiMessage"
+    delete:
+      operationId: deleteAccomplishment
+      tags: [accomplishments]
+      summary: Delete an accomplishment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiMessage"
+  /accomplishments/{id}/feature:
+    patch:
+      operationId: toggleFeatured
+      tags: [accomplishments]
+      summary: Toggle featured status
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Accomplishment"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiMessage"
+  /summary:
+    get:
+      operationId: getSummary
+      tags: [insights]
+      summary: Aggregate report-card summary
+      description: Totals, category breakdown, and span of years for the whole record
+      responses:
+        "200":
+          description: Summary statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Summary"
+  /timeline:
+    get:
+      operationId: getTimeline
+      tags: [insights]
+      summary: Accomplishments grouped by year
+      responses:
+        "200":
+          description: Year groups, newest year first
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TimelineYear"
+  /featured:
+    get:
+      operationId: getFeatured
+      tags: [insights]
+      summary: Featured accomplishments
+      responses:
+        "200":
+          description: Featured accomplishments only
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Accomplishment"
+  /channel:
+    post:
+      operationId: channelKuczynski
+      tags: [channel]
+      summary: Send a message to the Kuczynski bot (Genius 101) and get a reply
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChannelRequest"
+      responses:
+        "200":
+          description: The bot's reply
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChannelResponse"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiMessage"
+        "429":
+          description: Rate limited upstream
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiMessage"
+        "502":
+          description: Upstream service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiMessage"
+  /storage/uploads/request-url:
+    post:
+      tags: [Storage]
+      operationId: requestUploadUrl
+      summary: Request a presigned URL for file upload
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UploadUrlRequest"
+      responses:
+        "200":
+          description: Presigned upload URL generated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UploadUrlResponse"
+        "400":
+          description: Missing or invalid required fields.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiMessage"
+        "500":
+          description: Failed to generate upload URL.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiMessage"
+  /storage/public-objects/{filePath}:
+    get:
+      tags: [Storage]
+      operationId: getPublicObject
+      summary: Serve a public asset from PUBLIC_OBJECT_SEARCH_PATHS
+      parameters:
+        - name: filePath
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Object content streamed with correct Content-Type.
+          content:
+            "*/*":
+              schema:
+                type: string
+                format: binary
+        "404":
+          description: File not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiMessage"
+        "500":
+          description: Failed to serve public object.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiMessage"
+  /storage/objects/{objectPath}:
+    get:
+      tags: [Storage]
+      operationId: getStorageObject
+      summary: Serve an object entity from PRIVATE_OBJECT_DIR
+      parameters:
+        - name: objectPath
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Object content streamed with correct Content-Type.
+          content:
+            "*/*":
+              schema:
+                type: string
+                format: binary
+        "404":
+          description: Object not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiMessage"
+        "500":
+          description: Failed to serve object.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiMessage"
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    ApiMessage:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+    Profile:
+      type: object
+      required: [id, fullName, headline, summary, updatedAt]
+      properties:
+        id:
+          type: integer
+        fullName:
+          type: string
+        headline:
+          type: string
+        summary:
+          type: string
+        affiliation:
+          type: ["string", "null"]
+        location:
+          type: ["string", "null"]
+        email:
+          type: ["string", "null"]
+        website:
+          type: ["string", "null"]
+        updatedAt:
+          type: string
+    ProfileUpdate:
+      type: object
+      properties:
+        fullName:
+          type: string
+          minLength: 1
+        headline:
+          type: string
+        summary:
+          type: string
+        affiliation:
+          type: ["string", "null"]
+        location:
+          type: ["string", "null"]
+        email:
+          type: ["string", "null"]
+        website:
+          type: ["string", "null"]
+    ChannelMessage:
+      type: object
+      required: [role, content]
+      properties:
+        role:
+          type: string
+          enum: [user, assistant]
+        content:
+          type: string
+    ChannelRequest:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+          minLength: 1
+        history:
+          type: array
+          items:
+            $ref: "#/components/schemas/ChannelMessage"
+        maxWords:
+          type: integer
+          minimum: 1
+          maximum: 5000
+        quotes:
+          type: integer
+          minimum: 0
+          maximum: 20
+    ChannelResponse:
+      type: object
+      required: [reply]
+      properties:
+        reply:
+          type: string
+    ResourceLink:
+      type: object
+      required: [label, url]
+      properties:
+        label:
+          type: string
+          minLength: 1
+        url:
+          type: string
+          minLength: 1
+    UploadUrlRequest:
+      type: object
+      required: [name, size, contentType]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        size:
+          type: integer
+          minimum: 1
+        contentType:
+          type: string
+          minLength: 1
+    UploadUrlResponse:
+      type: object
+      required: [uploadURL, objectPath]
+      properties:
+        uploadURL:
+          type: string
+          format: uri
+        objectPath:
+          type: string
+        metadata:
+          $ref: "#/components/schemas/UploadUrlRequest"
+    Accomplishment:
+      type: object
+      required: [id, title, category, year, featured, links, createdAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        category:
+          $ref: "#/components/schemas/Category"
+        year:
+          type: integer
+        description:
+          type: ["string", "null"]
+        venue:
+          type: ["string", "null"]
+          description: Publisher, journal, platform, or client context
+        role:
+          type: ["string", "null"]
+          description: Author, ghost-writer, architect, composer, etc.
+        metric:
+          type: ["string", "null"]
+          description: A headline quantitative signal, e.g. "Top 1% publication volume" or "60.2K plays"
+        link:
+          type: ["string", "null"]
+        links:
+          type: array
+          items:
+            $ref: "#/components/schemas/ResourceLink"
+        filePath:
+          type: ["string", "null"]
+          description: Object-storage path of an uploaded document (e.g. a paper PDF)
+        fileName:
+          type: ["string", "null"]
+        featured:
+          type: boolean
+        createdAt:
+          type: string
+    AccomplishmentInput:
+      type: object
+      required: [title, category, year]
+      properties:
+        title:
+          type: string
+          minLength: 1
+        category:
+          $ref: "#/components/schemas/Category"
+        year:
+          type: integer
+        description:
+          type: ["string", "null"]
+        venue:
+          type: ["string", "null"]
+        role:
+          type: ["string", "null"]
+        metric:
+          type: ["string", "null"]
+        link:
+          type: ["string", "null"]
+        links:
+          type: array
+          items:
+            $ref: "#/components/schemas/ResourceLink"
+        filePath:
+          type: ["string", "null"]
+        fileName:
+          type: ["string", "null"]
+        featured:
+          type: boolean
+    AccomplishmentUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+        category:
+          $ref: "#/components/schemas/Category"
+        year:
+          type: integer
+        description:
+          type: ["string", "null"]
+        venue:
+          type: ["string", "null"]
+        role:
+          type: ["string", "null"]
+        metric:
+          type: ["string", "null"]
+        link:
+          type: ["string", "null"]
+        links:
+          type: array
+          items:
+            $ref: "#/components/schemas/ResourceLink"
+        filePath:
+          type: ["string", "null"]
+        fileName:
+          type: ["string", "null"]
+        featured:
+          type: boolean
+    Category:
+      type: string
+      enum:
+        - publication
+        - treatise
+        - software
+        - patent
+        - music
+        - other
+    CategoryCount:
+      type: object
+      required: [category, count]
+      properties:
+        category:
+          $ref: "#/components/schemas/Category"
+        count:
+          type: integer
+    Summary:
+      type: object
+      required: [total, featuredCount, byCategory, firstYear, latestYear, addedThisYear]
+      properties:
+        total:
+          type: integer
+        featuredCount:
+          type: integer
+        byCategory:
+          type: array
+          items:
+            $ref: "#/components/schemas/CategoryCount"
+        firstYear:
+          type: ["integer", "null"]
+        latestYear:
+          type: ["integer", "null"]
+        addedThisYear:
+          type: integer
+    TimelineYear:
+      type: object
+      required: [year, items]
+      properties:
+        year:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Accomplishment"
