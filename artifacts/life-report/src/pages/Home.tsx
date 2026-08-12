@@ -11,65 +11,67 @@ const PROFESSIONAL_LINKS = [
   { label: 'Quora', url: 'https://www.quora.com/profile/John-Michael-Kuczynski-1' },
 ];
 
-const AI_COURSES = [
-  'AI 101',
-  'AI Logic',
-  'AI Math',
-  'Analytic Philosophy',
-  'Biology',
-  'Business Ethics',
-  'Cognitive Science 101',
-  'Computer Systems',
-  'Conceptual Mathematics',
-  'Conceptual Physics',
-  'Constructive Critical Reasoning',
-  'Criminal Psychology',
-  'Critical Thinking',
-  'Data Analytics',
-  'Data Structures and Algorithms',
-  'Databases and SQL',
-  'Developmental Mathematics',
-  'Developmental Psychology',
-  'Diagonalization and Incompleteness',
-  'Discrete Math',
-  'Ethics',
-  'Evolutionary Psychology',
-  'Finance',
-  'Financial & Managerial Analytics',
-  'Finite Math',
-  'Formal Logic',
-  'IQ Booster',
-  'Infinite Series',
-  'Know Thyself',
-  'Lambda Calculus',
-  'Machine Learning and Applied AI',
-  'Marketing Analytics',
-  'Math Notation',
-  'Operations & Supply Chain Analytics',
-  'Personal Finance',
-  'Philosophy 101',
-  'Portfolio Analysis',
-  'Predictive Analytics',
-  'Programming (Python-based CS 1 / Computational Thinking)',
-  'Prompt Engineering',
-  'Psychodynamic Therapy 101',
-  'Psychodynamic Treatment of BPD 101',
-  'Psychodynamic Treatment of OCD 101',
-  'Public Speaking',
-  'Quantitative Reasoning',
-  'Restaurant & Hospitality Analytics',
-  'Revenue Management & Pricing Analytics',
-  'Sociology 101',
-  'Spatial IQ Booster',
-  'Voice Powered Know Thyself',
-  'Workforce Analytics',
+interface ColumnItem { label: string; url?: string }
+
+const AI_COURSES: ColumnItem[] = [
+  { label: 'AI 101', url: 'https://ai101.ink' },
+  { label: 'AI Logic', url: 'https://ailogiccourse.xyz' },
+  { label: 'AI Math', url: 'https://babyaimath.xyz' },
+  { label: 'Analytic Philosophy', url: 'https://analyticphilosophy101.ink' },
+  { label: 'Biology', url: 'https://biology101.xyz' },
+  { label: 'Business Ethics', url: 'https://businessethics101.ink' },
+  { label: 'Cognitive Science 101', url: 'https://babycognitivescience101.xyz' },
+  { label: 'Computer Systems', url: 'https://computersystems101.xyz' },
+  { label: 'Conceptual Mathematics', url: 'https://conceptualmath.ink' },
+  { label: 'Conceptual Physics', url: 'https://conceptualphysics.ink' },
+  { label: 'Constructive Critical Reasoning', url: 'https://constructivereasoning.xyz' },
+  { label: 'Criminal Psychology', url: 'https://babycrimpsych.xyz' },
+  { label: 'Critical Thinking', url: 'https://criticalthinking.ink' },
+  { label: 'Data Analytics', url: 'https://babyanalytics.xyz' },
+  { label: 'Data Structures and Algorithms', url: 'https://datastructures101.xyz' },
+  { label: 'Databases and SQL', url: 'https://databases101.xyz' },
+  { label: 'Developmental Mathematics', url: 'https://developmentalmath.ink' },
+  { label: 'Developmental Psychology', url: 'https://babydevelopmentalpsychology.xyz' },
+  { label: 'Diagonalization and Incompleteness', url: 'https://diagonalization.xyz' },
+  { label: 'Discrete Math', url: 'https://basicdiscretemath.xyz' },
+  { label: 'Ethics', url: 'https://ethics101.xyz' },
+  { label: 'Evolutionary Psychology', url: 'https://evopsych.xyz' },
+  { label: 'Finance', url: 'https://finance101.xyz' },
+  { label: 'Financial & Managerial Analytics', url: 'https://babyfinancialanalytics.xyz' },
+  { label: 'Finite Math', url: 'https://babyfinitemath.xyz' },
+  { label: 'Formal Logic', url: 'https://formallogic.xyz' },
+  { label: 'IQ Booster', url: 'https://iqbooster.xyz' },
+  { label: 'Infinite Series', url: 'https://babyinfiniteseries.xyz' },
+  { label: 'Know Thyself', url: 'https://minikinowthyself.ink' },
+  { label: 'Lambda Calculus', url: 'https://basiclambdacalculus.xyz' },
+  { label: 'Machine Learning and Applied AI', url: 'https://machinelearning101.xyz' },
+  { label: 'Marketing Analytics', url: 'https://babymarketinganalytics.xyz' },
+  { label: 'Math Notation', url: 'https://mathnotation.ink' },
+  { label: 'Operations & Supply Chain Analytics', url: 'https://babysupplychain.xyz' },
+  { label: 'Personal Finance', url: 'https://personalfinance101.xyz' },
+  { label: 'Philosophy 101', url: 'https://philosophy101.xyz' },
+  { label: 'Portfolio Analysis', url: 'https://portfolioanalysis101.ink' },
+  { label: 'Predictive Analytics', url: 'https://babypredictiveanalytics.xyz' },
+  { label: 'Programming (Python-based CS 1 / Computational Thinking)', url: 'https://python101.xyz' },
+  { label: 'Prompt Engineering', url: 'https://promptengineering.ink' },
+  { label: 'Psychodynamic Therapy 101', url: 'https://psychodynamictherapy.xyz' },
+  { label: 'Psychodynamic Treatment of BPD 101', url: 'https://psychodynamicbpdtherapy.xyz' },
+  { label: 'Psychodynamic Treatment of OCD 101', url: 'https://psychodynamicocdtherapy.xyz' },
+  { label: 'Public Speaking', url: 'https://publicspeaking101.xyz' },
+  { label: 'Quantitative Reasoning', url: 'https://quantitativereasoning.ink' },
+  { label: 'Restaurant & Hospitality Analytics', url: 'https://babyrestaurantanalytics.xyz' },
+  { label: 'Revenue Management & Pricing Analytics', url: 'https://basicrevenuemanagement.xyz' },
+  { label: 'Sociology 101', url: 'https://sociology101.ink' },
+  { label: 'Spatial IQ Booster', url: 'https://spatialiqbooster.xyz' },
+  { label: 'Voice Powered Know Thyself', url: 'https://voicepoweredknowthyself.xyz' },
+  { label: 'Workforce Analytics', url: 'https://babyworkforceanalytics.xyz' },
 ];
 
-const KEY_APPS: string[] = [];
-const KEY_PUBLICATIONS: string[] = [];
-const KEY_COMMISSIONED_WORKS: string[] = [];
+const KEY_APPS: ColumnItem[] = [];
+const KEY_PUBLICATIONS: ColumnItem[] = [];
+const KEY_COMMISSIONED_WORKS: ColumnItem[] = [];
 
-function Column({ title, items }: { title: string; items: string[] }) {
+function Column({ title, items }: { title: string; items: ColumnItem[] }) {
   return (
     <div className="p-6 md:p-8">
       <h2 className="font-mono text-xs uppercase tracking-widest text-primary font-bold border-b-2 border-primary/30 pb-3 mb-4">
@@ -78,8 +80,19 @@ function Column({ title, items }: { title: string; items: string[] }) {
       {items.length > 0 ? (
         <ul className="space-y-1.5">
           {items.map((item) => (
-            <li key={item} className="text-[13px] leading-snug text-foreground">
-              {item}
+            <li key={item.label} className="text-[13px] leading-snug">
+              {item.url ? (
+                <GatedLink
+                  href={item.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-foreground hover:text-primary hover:underline underline-offset-2 transition-colors"
+                >
+                  {item.label}
+                </GatedLink>
+              ) : (
+                <span className="text-foreground">{item.label}</span>
+              )}
             </li>
           ))}
         </ul>

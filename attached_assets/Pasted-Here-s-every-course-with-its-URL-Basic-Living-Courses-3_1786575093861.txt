@@ -1,0 +1,66 @@
+Here's every course with its URL:
+
+**Basic Living Courses (36)**
+
+| Course | URL |
+|---|---|
+| AI Logic | https://ailogiccourse.xyz |
+| Basic AI | https://babyartificialintelligence.xyz |
+| Basic AI Math | https://babyaimath.xyz |
+| Basic Cognitive Science 101 | https://babycognitivescience101.xyz |
+| Basic Constructive Critical Reasoning | https://basicconstructivereasoning.xyz |
+| Basic Criminal Psychology | https://babycrimpsych.xyz |
+| Basic Data Analytics | https://babyanalytics.xyz |
+| Basic Developmental Psychology | https://babydevelopmentalpsychology.xyz |
+| Basic Diagonalization and Incompleteness | https://diagonalization.xyz |
+| Basic Discrete Math | https://basicdiscretemath.xyz |
+| Basic Evolutionary Psychology | https://babyevopsych.xyz |
+| Basic Financial & Managerial Analytics | https://babyfinancialanalytics.xyz |
+| Basic Finite Math | https://babyfinitemath.xyz |
+| Basic Infinite Series | https://babyinfiniteseries.xyz |
+| Basic Lambda Calculus | https://basiclambdacalculus.xyz |
+| Basic Marketing Analytics | https://babymarketinganalytics.xyz |
+| Basic Operations & Supply Chain Analytics | https://babysupplychain.xyz |
+| Basic Predictive Analytics | https://babypredictiveanalytics.xyz |
+| Basic Psychodynamic Therapy 101 | https://psychodynamictherapy.xyz |
+| Basic Psychodynamic Treatment of BPD 101 | https://psychodynamicbpdtherapy.xyz |
+| Basic Psychodynamic Treatment of OCD 101 | https://psychodynamicocdtherapy.xyz |
+| Basic Restaurant & Hospitality Analytics | https://babyrestaurantanalytics.xyz |
+| Basic Revenue Management & Pricing Analytics | https://basicrevenuemanagement.xyz |
+| Basic Workforce Analytics | https://babyworkforceanalytics.xyz |
+| Biology | https://biology101.xyz |
+| Computer Systems | https://computersystems101.xyz |
+| Data Structures and Algorithms | https://datastructures101.xyz |
+| Databases and SQL | https://databases101.xyz |
+| IQ Booster | https://iqbooster.xyz |
+| Machine Learning and Applied AI | https://machinelearning101.xyz |
+| Personal Finance | https://personalfinance101.xyz |
+| Programming (Python-based CS 1) | https://python101.xyz |
+| Prompt Engineering | https://promptengineering.ink |
+| Sociology 101 | https://sociology101.ink |
+| Spatial IQ Booster | https://spatialiqbooster.xyz |
+| Voice Powered Know Thyself | https://voicepoweredknowthyself.xyz |
+
+**Living Courses (19)**
+
+| Course | URL |
+|---|---|
+| AI 101 | https://ai101.ink |
+| Analytic Philosophy | https://analyticphilosophy101.ink |
+| Business Ethics | https://businessethics101.ink |
+| Conceptual Mathematics | https://conceptualmath.ink |
+| Conceptual Physics | https://conceptualphysics.ink |
+| Constructive Critical Reasoning | https://constructivereasoning.xyz |
+| Critical Thinking | https://criticalthinking.ink |
+| Developmental Mathematics | https://developmentalmath.ink |
+| Ethics | https://ethics101.xyz |
+| Evolutionary Psychology | https://evopsych.xyz |
+| Finance | https://finance101.xyz |
+| Formal Logic | https://formallogic.xyz |
+| Know Thyself | https://minikinowthyself.ink |
+| Philosophy 101 | https://philosophy101.xyz |
+| Portfolio Analysis | https://portfolioanalysis101.ink |
+| Public Speaking | https://publicspeaking101.xyz |
+| Quantitative Reasoning | https://quantitativereasoning.ink |
+| Teach Yourself Math Notation | https://mathnotation.ink |
+| Voice-Powered KnowThySelf | https://voicepoweredknowthyself.xyz |
