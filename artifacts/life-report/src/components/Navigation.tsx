@@ -57,15 +57,6 @@ export function Navigation({ children }: { children: ReactNode }) {
               );
             })}
           </div>
-          <div className="mt-8">
-            <button
-              onClick={openDialogue}
-              className="flex w-full items-center gap-3 px-4 py-3 text-sm font-medium transition-all text-primary bg-primary/5 hover:bg-primary/10 border border-primary/20 hover:border-primary/40 rounded-none shadow-sm cursor-pointer"
-            >
-              <MessageSquare className="w-4 h-4" />
-              Dialogue
-            </button>
-          </div>
         </nav>
         <div className="p-4 border-t border-border space-y-3">
           {!loading && (
@@ -133,6 +124,15 @@ export function Navigation({ children }: { children: ReactNode }) {
           );
         })}
       </nav>
+
+      {/* Ask Dr. K — fixed top right (desktop) */}
+      <button
+        onClick={openDialogue}
+        className="hidden md:flex fixed top-6 right-6 z-50 items-center gap-2 px-5 py-3 bg-primary text-primary-foreground font-mono text-xs uppercase tracking-widest font-bold shadow-lg hover:bg-primary/90 transition-colors cursor-pointer"
+      >
+        <MessageSquare className="w-4 h-4" />
+        Ask Dr. K
+      </button>
 
       {/* Main Content Area */}
       <main className="flex-1 md:ml-64 pb-20 md:pb-0 overflow-y-auto">
