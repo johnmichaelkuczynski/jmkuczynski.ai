@@ -108,8 +108,6 @@ const KEY_APPS: ColumnItem[] = [
   { label: 'SOXL Options Pro', url: 'https://soxlpro.xyz' },
   { label: 'SOXL Options Edge', url: 'https://soxledge.xyz' },
 ];
-const KEY_PUBLICATIONS: ColumnItem[] = [];
-const KEY_COMMISSIONED_WORKS: ColumnItem[] = [];
 
 function Column({ title, items }: { title: string; items: ColumnItem[] }) {
   return (
@@ -199,11 +197,9 @@ export function Home() {
 
       {/* Four-Column Index */}
       <section className="bg-background">
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 divide-y md:divide-y-0 xl:divide-y-0 md:divide-x divide-border">
+        <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-border">
           <Column title="AI Courses" items={AI_COURSES} />
           <Column title="Key Apps" items={KEY_APPS} />
-          <Column title="Key Peer-Reviewed Publications" items={KEY_PUBLICATIONS} />
-          <Column title="Key Commissioned Works" items={KEY_COMMISSIONED_WORKS} />
         </div>
       </section>
     </div>
