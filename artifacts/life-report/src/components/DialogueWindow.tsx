@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useDialogue } from '@/contexts/DialogueContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { X, Maximize2, Minimize2, GripHorizontal } from 'lucide-react';
+import { X, Maximize2, Minimize2, GripHorizontal, Download, Mic, MicOff, Volume2, VolumeX, List } from 'lucide-react';
 import { useChannelKuczynski } from '@workspace/api-client-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -28,6 +28,16 @@ function MessageText({ content }: { content: string }) {
   );
 }
 
+type LengthKey = 'super-concise' | 'concise' | 'normal' | 'elaborate' | 'detailed';
+
+const LENGTH_OPTIONS: { key: LengthKey; label: string; maxWords?: number }[] = [
+  { key: 'super-concise', label: 'Super Concise', maxWords: 50 },
+  { key: 'concise', label: 'Concise', maxWords: 150 },
+  { key: 'normal', label: 'Normal' },
+  { key: 'elaborate', label: 'Elaborate', maxWords: 600 },
+  { key: 'detailed', label: 'Detailed', maxWords: 1200 },
+];
+
 export function DialogueWindow() {
   const { isOpen, closeDialogue, history, setHistory } = useDialogue();
   const { user, promptLogin } = useAuth();
@@ -36,6 +46,72 @@ export function DialogueWindow() {
   const [input, setInput] = useState('');
   const [isMaximized, setIsMaximized] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Response preferences
+  const [length, setLength] = useState<LengthKey>('normal');
+  const [bullets, setBullets] = useState(false);
+  const [speakReplies, setSpeakReplies] = useState(false);
+  const [listening, setListening] = useState(false);
+  const recognitionRef = useRef<any>(null);
+  const speechSupported =
+    typeof window !== 'undefined' &&
+    !!((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition);
+
+  const speak = (text: string) => {
+    if (!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(text.replace(/[*_#`]/g, ''));
+    utter.rate = 1.0;
+    window.speechSynthesis.speak(utter);
+  };
+
+  const toggleListening = () => {
+    if (listening) {
+      recognitionRef.current?.stop();
+      return;
+    }
+    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SR) return;
+    const rec = new SR();
+    rec.lang = 'en-US';
+    rec.interimResults = true;
+    rec.continuous = false;
+    let finalTranscript = '';
+    rec.onresult = (e: any) => {
+      let interim = '';
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        const t = e.results[i][0].transcript;
+        if (e.results[i].isFinal) finalTranscript += t;
+        else interim += t;
+      }
+      setInput((prev) => {
+        const base = prev.replace(/\u200b.*$/, '');
+        return base + finalTranscript + (interim ? '\u200b' + interim : '');
+      });
+    };
+    rec.onend = () => {
+      setListening(false);
+      setInput((prev) => prev.replace(/\u200b/g, ''));
+    };
+    rec.onerror = () => setListening(false);
+    recognitionRef.current = rec;
+    setListening(true);
+    rec.start();
+  };
+
+  const downloadTranscript = () => {
+    const lines = history.map((m) =>
+      `${m.role === 'user' ? 'YOU' : 'DR. K'}:\n${m.content}\n`
+    );
+    const text = `DIALOGUE WITH DR. K — ${new Date().toLocaleString()}\n${'='.repeat(40)}\n\n${lines.join('\n')}`;
+    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `dialogue-with-dr-k-${new Date().toISOString().slice(0, 10)}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   const windowRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -133,14 +209,21 @@ export function DialogueWindow() {
     
     setHistory(prev => [...prev, { role: 'user', content: userMessage }]);
 
+    const maxWords = LENGTH_OPTIONS.find((o) => o.key === length)?.maxWords;
+    const outgoing = bullets
+      ? `${userMessage}\n\n(Please format your answer as bullet points.)`
+      : userMessage;
+
     channel.mutate({
       data: {
-        message: userMessage,
+        message: outgoing,
         history: history as any, // API expects role as ChannelMessageRole string literal
+        ...(maxWords ? { maxWords } : {}),
       }
     }, {
       onSuccess: (res) => {
         setHistory(prev => [...prev, { role: 'assistant', content: res.reply }]);
+        if (speakReplies) speak(res.reply);
       },
       onError: (err: any) => {
         const errorMsg = err?.data?.error || err?.error || 'An error occurred while consulting the archive.';
@@ -179,6 +262,25 @@ export function DialogueWindow() {
           <span className="font-mono text-xs uppercase tracking-widest font-bold text-primary">Channel: Kuczynski</span>
         </div>
         <div className="flex items-center gap-2">
+          {history.length > 0 && (
+            <button
+              onClick={downloadTranscript}
+              title="Download exchange as TXT"
+              className="p-1 hover:bg-secondary-foreground/10 transition-colors"
+            >
+              <Download className="w-4 h-4" />
+            </button>
+          )}
+          <button
+            onClick={() => {
+              if (speakReplies) window.speechSynthesis?.cancel();
+              setSpeakReplies(!speakReplies);
+            }}
+            title={speakReplies ? 'Voice replies: on' : 'Voice replies: off'}
+            className={cn('p-1 transition-colors', speakReplies ? 'text-primary bg-primary/10' : 'hover:bg-secondary-foreground/10')}
+          >
+            {speakReplies ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+          </button>
           {!isMobile && (
             <button onClick={() => setIsMaximized(!isMaximized)} className="p-1 hover:bg-secondary-foreground/10 transition-colors">
               {isMaximized ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
@@ -250,7 +352,36 @@ export function DialogueWindow() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="p-4 border-t border-border bg-card flex gap-4 items-end">
+      {/* Response preferences */}
+      <div className="px-4 py-2 border-t border-border bg-card flex flex-wrap items-center gap-x-4 gap-y-2">
+        <label className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+          Length
+          <select
+            value={length}
+            onChange={(e) => setLength(e.target.value as LengthKey)}
+            className="bg-background border border-border px-2 py-1 text-[11px] font-mono uppercase tracking-wider text-foreground focus:outline-none focus:border-primary"
+          >
+            {LENGTH_OPTIONS.map((o) => (
+              <option key={o.key} value={o.key}>{o.label}</option>
+            ))}
+          </select>
+        </label>
+        <button
+          type="button"
+          onClick={() => setBullets(!bullets)}
+          className={cn(
+            'flex items-center gap-1.5 px-2 py-1 font-mono text-[10px] uppercase tracking-widest border transition-colors',
+            bullets
+              ? 'text-primary border-primary/40 bg-primary/10'
+              : 'text-muted-foreground border-border hover:border-primary/30'
+          )}
+        >
+          <List className="w-3.5 h-3.5" />
+          Bullet Points {bullets ? 'On' : 'Off'}
+        </button>
+      </div>
+
+      <form onSubmit={handleSubmit} className="p-4 pt-2 border-t border-border bg-card flex gap-3 items-end">
         <textarea
           value={input}
           onChange={e => setInput(e.target.value)}
@@ -263,6 +394,21 @@ export function DialogueWindow() {
             }
           }}
         />
+        {speechSupported && (
+          <button
+            type="button"
+            onClick={toggleListening}
+            title={listening ? 'Stop listening' : 'Speak your question'}
+            className={cn(
+              'h-[60px] w-[52px] flex items-center justify-center border transition-colors shrink-0',
+              listening
+                ? 'bg-destructive text-destructive-foreground border-destructive animate-pulse'
+                : 'bg-background text-primary border-border hover:border-primary'
+            )}
+          >
+            {listening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+          </button>
+        )}
         <Button type="submit" disabled={!input.trim() || channel.isPending} className="h-[60px] px-8 bg-primary text-primary-foreground hover:bg-primary/90 font-mono uppercase tracking-widest text-xs rounded-none">
           Send
         </Button>

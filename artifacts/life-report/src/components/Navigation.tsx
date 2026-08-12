@@ -23,13 +23,10 @@ export function Navigation({ children }: { children: ReactNode }) {
       {/* Desktop Sidebar */}
       <aside className="hidden md:flex flex-col w-64 border-r border-border shrink-0 fixed h-full bg-card">
         <div className="p-8 border-b border-border">
-          <div className="flex items-center gap-2 font-serif text-2xl font-bold italic tracking-tight text-primary">
+          <div className="flex items-center gap-2 font-serif text-2xl font-bold tracking-tight text-primary">
             <Archive className="w-6 h-6" />
-            AI-Course Builder
+            AI-Powered Courses
           </div>
-          <p className="mt-2 text-xs font-mono text-muted-foreground uppercase tracking-widest">
-            Living Record
-          </p>
           <a
             href="mailto:zhi@zhisystems.org"
             className="mt-4 flex items-center justify-center gap-2 px-4 py-2 text-xs font-mono uppercase tracking-widest font-bold text-primary-foreground bg-primary hover:bg-primary/90 transition-colors"
@@ -91,9 +88,9 @@ export function Navigation({ children }: { children: ReactNode }) {
 
       {/* Mobile Topbar */}
       <header className="md:hidden flex items-center justify-between p-4 border-b border-border bg-card shrink-0">
-        <div className="flex items-center gap-2 font-serif text-xl font-bold italic text-primary">
+        <div className="flex items-center gap-2 font-serif text-xl font-bold text-primary">
           <Archive className="w-5 h-5" />
-          AI-Course Builder
+          AI-Powered Courses
         </div>
         <div className="flex items-center gap-2">
           <a href="mailto:zhi@zhisystems.org" className="p-2 bg-primary text-primary-foreground flex items-center justify-center" aria-label="Contact Me">
