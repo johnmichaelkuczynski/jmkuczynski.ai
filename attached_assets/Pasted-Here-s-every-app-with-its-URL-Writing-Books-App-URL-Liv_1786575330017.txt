@@ -1,0 +1,65 @@
+Here's every app with its URL:
+
+**📝 Writing & Books**
+| App | URL |
+|---|---|
+| Living Book Creator | https://livingbookcreator.xyz |
+| Book Builder | https://bookbuilder.ink |
+| Genius Dictation | https://geniusdictation.com |
+| EZ Reader | https://ezreader.ai |
+| Classic EZ Reader | https://classicezreader.ink |
+| EZ Story | https://ezstory.xyz |
+| NeuroText | https://neurotext.ink |
+| Text Surgeon Plus | https://textsurgeonplus.xyz |
+| Rewrite Plus | https://rewriteplus.xyz |
+| GPTByPass | https://gptbypass.ink |
+| Forensic Document Verifier | https://forensicdocumentverifier.com |
+| JM Kuczynski | https://jmkuczynski.ai |
+
+**🎓 Education & Learning**
+| App | URL |
+|---|---|
+| Chess Tutor | https://chesstutor.xyz |
+| College AI Match | https://collegeaimatch.xyz |
+| EZ Homework | https://ezhw.ink |
+| EZGrader | https://ezgrader.ai |
+| Judge Evaluator | https://judge101.ink |
+| Texas Bar Prep | https://texasbarprep.ink |
+
+**🧠 Intelligence & Psychology**
+| App | URL |
+|---|---|
+| Genius 101 | https://genius101.xyz |
+| Freud GPT | https://freudgpt.me |
+| Model Builder | https://modelwiz.xyz |
+| Originality Meter | https://originalitymeter.com |
+| Intelligence Meter | https://iq101.ink |
+| Mind Profiler | https://mindprofiler.ink |
+| Mind Probe | https://mindprobe.ink |
+| Smart Goal Tracker | https://smartgoaltracker.xyz |
+| Psychology Pro | https://psychologypro.xyz |
+| ModelWiz | https://modelwiz.xyz |
+| Model Transformer | https://modeltransformer.xyz |
+| LLM Plus | https://llmplus.ink |
+| FrameWise | https://framewise.ink |
+
+**🎬 Audio-Visual**
+| App | URL |
+|---|---|
+| Frame Shot | https://frameshot.xyz |
+| Graphic Novel Creator | https://graphicnovelcreator.xyz |
+| OCR Pro | https://ocrman.shop |
+| Photo Psychoanalysis | https://photopsychoanalysis.xyz |
+| Multiple Video Viewer | https://multivideo.ink |
+| Audio Transcriber Plus | https://audiotranscriber.ink |
+| Podcast Creator | https://ezpodcast.xyz |
+| YouTube Video Downloader | https://youtubedownloader.ink |
+
+**💹 Finance**
+| App | URL |
+|---|---|
+| Forex Edge | https://usdhkd.ink |
+| SOXL Options Pro | https://soxlpro.xyz |
+| SOXL Options Edge | https://soxledge.xyz |
+
+Note: Model Builder and ModelWiz both point to modelwiz.xyz — likely a duplicate if you want one removed.
