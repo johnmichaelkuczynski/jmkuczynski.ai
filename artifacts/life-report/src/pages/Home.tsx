@@ -79,7 +79,6 @@ const KEY_APPS: ColumnItem[] = [
   { label: 'Rewrite Plus', url: 'https://rewriteplus.xyz' },
   { label: 'GPTByPass', url: 'https://gptbypass.ink' },
   { label: 'Forensic Document Verifier', url: 'https://forensicdocumentverifier.com' },
-  { label: 'JM Kuczynski', url: 'https://jmkuczynski.ai' },
   { label: 'Chess Tutor', url: 'https://chesstutor.xyz' },
   { label: 'College AI Match', url: 'https://collegeaimatch.xyz' },
   { label: 'EZ Homework', url: 'https://ezhw.ink' },
