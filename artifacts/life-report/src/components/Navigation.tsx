@@ -10,11 +10,13 @@ export function Navigation({ children }: { children: ReactNode }) {
   const { openDialogue } = useDialogue();
   const { user, loading, login, logout } = useAuth();
 
-  const navItems = [
-    { href: '/', label: 'Dossier', icon: BookOpen },
-    { href: '/timeline', label: 'Timeline', icon: Calendar },
-    { href: '/manage', label: 'Manage', icon: Settings },
-  ];
+  const navItems = user?.isAdmin
+    ? [
+        { href: '/', label: 'Dossier', icon: BookOpen },
+        { href: '/timeline', label: 'Timeline', icon: Calendar },
+        { href: '/manage', label: 'Manage', icon: Settings },
+      ]
+    : [];
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row w-full bg-background">
@@ -104,6 +106,7 @@ export function Navigation({ children }: { children: ReactNode }) {
       </header>
 
       {/* Mobile Bottom Nav */}
+      {navItems.length > 0 && (
       <nav className="md:hidden fixed bottom-0 left-0 right-0 border-t border-border bg-card flex z-50">
         {navItems.map((item) => {
           const isActive = location === item.href;
@@ -124,6 +127,7 @@ export function Navigation({ children }: { children: ReactNode }) {
           );
         })}
       </nav>
+      )}
 
       {/* Ask Dr. K — fixed top right (desktop) */}
       <button

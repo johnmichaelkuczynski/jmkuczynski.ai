@@ -2,6 +2,7 @@ import { Router, type IRouter, type Request } from "express";
 import crypto from "node:crypto";
 import { OAuth2Client } from "google-auth-library";
 import { setSession, clearSession, getSession } from "../lib/session";
+import { ADMIN_EMAIL } from "../lib/admin";
 
 const router: IRouter = Router();
 
@@ -76,7 +77,12 @@ router.get("/auth/me", (req, res) => {
     res.status(401).json({ error: "Not signed in" });
     return;
   }
-  res.json({ email: user.email, name: user.name, picture: user.picture ?? null });
+  res.json({
+    email: user.email,
+    name: user.name,
+    picture: user.picture ?? null,
+    isAdmin: user.email.toLowerCase() === ADMIN_EMAIL,
+  });
 });
 
 router.post("/auth/logout", (_req, res) => {

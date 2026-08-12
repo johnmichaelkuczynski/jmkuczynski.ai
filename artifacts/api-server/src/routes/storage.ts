@@ -5,6 +5,7 @@ import {
 } from '@workspace/api-zod';
 import { Router, type IRouter, type Request, type Response } from 'express';
 
+import { requireAdmin } from '../lib/admin';
 import { ObjectPermission } from '../lib/objectAcl';
 import {
   ObjectNotFoundError,
@@ -37,9 +38,8 @@ function hasAuthenticatedSession(
  */
 router.post(
   '/storage/uploads/request-url',
+  requireAdmin,
   async (req: Request, res: Response) => {
-    // NOTE: This app is currently single-owner with no auth. When auth is
-    // added, restore the hasAuthenticatedSession(req) guard here.
     void hasAuthenticatedSession;
 
     const parsed = RequestUploadUrlBody.safeParse(req.body);

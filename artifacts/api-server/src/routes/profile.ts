@@ -1,4 +1,5 @@
 import { Router, type IRouter } from "express";
+import { requireAdmin } from "../lib/admin";
 import { eq } from "drizzle-orm";
 import { db, profilesTable } from "@workspace/db";
 import {
@@ -28,7 +29,7 @@ router.get("/profile", async (_req, res): Promise<void> => {
   res.json(GetProfileResponse.parse(serializeProfile(profile!)));
 });
 
-router.put("/profile", async (req, res): Promise<void> => {
+router.put("/profile", requireAdmin, async (req, res): Promise<void> => {
   const parsed = UpdateProfileBody.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: parsed.error.message });
