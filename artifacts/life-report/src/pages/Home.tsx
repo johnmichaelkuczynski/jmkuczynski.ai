@@ -59,6 +59,14 @@ export function Home() {
 
   const categories: (Category | 'all')[] = ['all', 'publication', 'treatise', 'software', 'patent', 'music', 'other'];
 
+  const PROFESSIONAL_LINKS = [
+    { label: 'Google Scholar', url: 'https://scholar.google.com/scholar?hl=en&as_sdt=0%2C34&q=JOHN-MICHAEL+KUCZYNSKI&btnG=' },
+    { label: 'PhilPapers', url: 'https://philpeople.org/profiles/john-michael-kuczynski' },
+    { label: 'Amazon', url: 'https://www.amazon.com/stores/J.-M.-Kuczynski/author/B001JOP0K6?ref=sr_ntt_srch_lnk_1&qid=1786574135&sr=8-1&shoppingPortalEnabled=true&ccs_id=86d08ffa-691d-49e7-8364-c9009f1fa858' },
+    { label: 'Amazon Music', url: 'https://music.amazon.com/artists/B0829CYVWQ/john-michael-kuczynski' },
+    { label: 'Quora', url: 'https://www.quora.com/profile/John-Michael-Kuczynski-1' },
+  ];
+
   return (
     <div className="min-h-screen">
       {/* Hero Profile Section */}
@@ -80,35 +88,19 @@ export function Home() {
             </p>
           </div>
 
-          <p className="text-lg text-muted-foreground leading-relaxed max-w-3xl animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
-            {profile.summary}
-          </p>
-
-          <div className="flex flex-wrap gap-6 pt-4 text-sm font-mono text-muted-foreground animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">
-            {profile.affiliation && (
-              <div className="flex items-center gap-2">
-                <Building className="w-4 h-4 text-primary" />
-                {profile.affiliation}
-              </div>
-            )}
-            {profile.location && (
-              <div className="flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-primary" />
-                {profile.location}
-              </div>
-            )}
-            {profile.website && (
-              <a href={profile.website} target="_blank" rel="noreferrer" className="flex items-center gap-2 hover:text-primary transition-colors">
-                <Globe className="w-4 h-4 text-primary" />
-                Website
-              </a>
-            )}
-            {profile.email && (
-              <a href={`mailto:${profile.email}`} className="flex items-center gap-2 hover:text-primary transition-colors">
-                <Mail className="w-4 h-4 text-primary" />
-                Email
-              </a>
-            )}
+          <div className="flex flex-wrap gap-x-8 gap-y-3 pt-2 text-sm font-mono uppercase tracking-widest animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
+            {PROFESSIONAL_LINKS.map((lnk) => (
+              <GatedLink
+                key={lnk.label}
+                href={lnk.url}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-2 text-foreground hover:text-primary transition-colors underline-offset-4 hover:underline"
+              >
+                <ExternalLink className="w-3.5 h-3.5 text-primary" />
+                {lnk.label}
+              </GatedLink>
+            ))}
           </div>
         </div>
       </section>
