@@ -104,7 +104,6 @@ const KEY_APPS: ColumnItem[] = [
   { label: 'Multiple Video Viewer', url: 'https://multivideo.ink' },
   { label: 'Audio Transcriber Plus', url: 'https://audiotranscriber.ink' },
   { label: 'Podcast Creator', url: 'https://ezpodcast.xyz' },
-  { label: 'YouTube Video Downloader', url: 'https://youtubedownloader.ink' },
   { label: 'Forex Edge', url: 'https://usdhkd.ink' },
   { label: 'SOXL Options Pro', url: 'https://soxlpro.xyz' },
   { label: 'SOXL Options Edge', url: 'https://soxledge.xyz' },
