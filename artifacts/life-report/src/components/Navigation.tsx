@@ -23,7 +23,7 @@ export function Navigation({ children }: { children: ReactNode }) {
         <div className="p-8 border-b border-border">
           <div className="flex items-center gap-2 font-serif text-2xl font-bold italic tracking-tight text-primary">
             <Archive className="w-6 h-6" />
-            Life Report
+            AI-Course Builder
           </div>
           <p className="mt-2 text-xs font-mono text-muted-foreground uppercase tracking-widest">
             Living Record
@@ -91,7 +91,7 @@ export function Navigation({ children }: { children: ReactNode }) {
       <header className="md:hidden flex items-center justify-between p-4 border-b border-border bg-card shrink-0">
         <div className="flex items-center gap-2 font-serif text-xl font-bold italic text-primary">
           <Archive className="w-5 h-5" />
-          Life Report
+          AI-Course Builder
         </div>
         <div className="flex items-center gap-2">
           <a href="mailto:zhi@zhisystems.org" className="p-2 bg-primary text-primary-foreground flex items-center justify-center" aria-label="Contact Me">
