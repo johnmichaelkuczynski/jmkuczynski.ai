@@ -1,2 +1,7 @@
 User-agent: *
 Allow: /
+Disallow: /manage
+Disallow: /timeline
+Disallow: /api/
+
+Sitemap: https://jmkuczynski.ai/sitemap.xml
