@@ -52,10 +52,13 @@ export function DialogueWindow() {
   const [bullets, setBullets] = useState(false);
   const [speakReplies, setSpeakReplies] = useState(false);
   const [listening, setListening] = useState(false);
-  const recognitionRef = useRef<any>(null);
+  const [transcribing, setTranscribing] = useState(false);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const speechSupported =
     typeof window !== 'undefined' &&
-    !!((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition);
+    typeof navigator !== 'undefined' &&
+    !!navigator.mediaDevices?.getUserMedia &&
+    typeof MediaRecorder !== 'undefined';
 
   const speak = (text: string) => {
     if (!('speechSynthesis' in window)) return;
@@ -65,38 +68,76 @@ export function DialogueWindow() {
     window.speechSynthesis.speak(utter);
   };
 
-  const toggleListening = () => {
+  const transcribeAudio = async (blob: Blob) => {
+    setTranscribing(true);
+    try {
+      const res = await fetch(`${import.meta.env.BASE_URL}api/transcribe`, {
+        method: 'POST',
+        headers: { 'Content-Type': blob.type || 'audio/webm' },
+        body: blob,
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        setError(data?.error || 'Could not transcribe your voice. Please try again.');
+        return;
+      }
+      const text = (data?.text || '').trim();
+      if (text) {
+        setInput((prev) => (prev.trim() ? `${prev.trim()} ${text}` : text));
+      } else {
+        setError('No speech detected. Please try again.');
+      }
+    } catch {
+      setError('Could not transcribe your voice. Please try again.');
+    } finally {
+      setTranscribing(false);
+    }
+  };
+
+  const toggleListening = async () => {
     if (listening) {
-      recognitionRef.current?.stop();
+      mediaRecorderRef.current?.stop();
       return;
     }
-    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SR) return;
-    const rec = new SR();
-    rec.lang = 'en-US';
-    rec.interimResults = true;
-    rec.continuous = false;
-    let finalTranscript = '';
-    rec.onresult = (e: any) => {
-      let interim = '';
-      for (let i = e.resultIndex; i < e.results.length; i++) {
-        const t = e.results[i][0].transcript;
-        if (e.results[i].isFinal) finalTranscript += t;
-        else interim += t;
-      }
-      setInput((prev) => {
-        const base = prev.replace(/\u200b.*$/, '');
-        return base + finalTranscript + (interim ? '\u200b' + interim : '');
-      });
-    };
-    rec.onend = () => {
+    if (!user) {
+      promptLogin();
+      return;
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mimeType = MediaRecorder.isTypeSupported('audio/webm')
+        ? 'audio/webm'
+        : MediaRecorder.isTypeSupported('audio/mp4')
+          ? 'audio/mp4'
+          : '';
+      const rec = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
+      const chunks: BlobPart[] = [];
+      rec.ondataavailable = (e) => {
+        if (e.data.size > 0) chunks.push(e.data);
+      };
+      rec.onstop = () => {
+        setListening(false);
+        stream.getTracks().forEach((t) => t.stop());
+        const blob = new Blob(chunks, { type: rec.mimeType || 'audio/webm' });
+        if (blob.size > 1000) {
+          void transcribeAudio(blob);
+        } else {
+          setError('Recording was too short. Hold the mic on a bit longer and speak clearly.');
+        }
+      };
+      rec.onerror = () => {
+        setListening(false);
+        stream.getTracks().forEach((t) => t.stop());
+        setError('Recording failed. Please try again.');
+      };
+      mediaRecorderRef.current = rec;
+      setError(null);
+      setListening(true);
+      rec.start();
+    } catch {
+      setError('Microphone access was denied. Please allow microphone access and try again.');
       setListening(false);
-      setInput((prev) => prev.replace(/\u200b/g, ''));
-    };
-    rec.onerror = () => setListening(false);
-    recognitionRef.current = rec;
-    setListening(true);
-    rec.start();
+    }
   };
 
   const downloadTranscript = () => {
@@ -119,6 +160,37 @@ export function DialogueWindow() {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [size, setSize] = useState({ w: 800, h: 600 });
   const [isMobile, setIsMobile] = useState(false);
+
+  // Stop any active recording when the dialogue closes or unmounts so the
+  // microphone is never left on invisibly.
+  useEffect(() => {
+    if (isOpen) return;
+    const rec = mediaRecorderRef.current;
+    if (rec && rec.state !== 'inactive') {
+      rec.stream.getTracks().forEach((t) => t.stop());
+      try {
+        rec.stop();
+      } catch {
+        /* already stopped */
+      }
+    }
+    mediaRecorderRef.current = null;
+    setListening(false);
+  }, [isOpen]);
+
+  useEffect(() => {
+    return () => {
+      const rec = mediaRecorderRef.current;
+      if (rec && rec.state !== 'inactive') {
+        rec.stream.getTracks().forEach((t) => t.stop());
+        try {
+          rec.stop();
+        } catch {
+          /* already stopped */
+        }
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -398,12 +470,21 @@ export function DialogueWindow() {
           <button
             type="button"
             onClick={toggleListening}
-            title={listening ? 'Stop listening' : 'Speak your question'}
+            disabled={transcribing}
+            title={
+              transcribing
+                ? 'Transcribing…'
+                : listening
+                  ? 'Stop recording'
+                  : 'Speak your question'
+            }
             className={cn(
               'h-[60px] w-[52px] flex items-center justify-center border transition-colors shrink-0',
               listening
                 ? 'bg-destructive text-destructive-foreground border-destructive animate-pulse'
-                : 'bg-background text-primary border-border hover:border-primary'
+                : transcribing
+                  ? 'bg-background text-muted-foreground border-border animate-pulse cursor-wait'
+                  : 'bg-background text-primary border-border hover:border-primary'
             )}
           >
             {listening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
