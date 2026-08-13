@@ -6,6 +6,7 @@ import insightsRouter from "./insights";
 import storageRouter from "./storage";
 import channelRouter from "./channel";
 import transcribeRouter from "./transcribe";
+import visitsRouter from "./visits";
 import authRouter from "./auth";
 
 const router: IRouter = Router();
@@ -18,5 +19,6 @@ router.use(insightsRouter);
 router.use(storageRouter);
 router.use(channelRouter);
 router.use(transcribeRouter);
+router.use(visitsRouter);
 
 export default router;
