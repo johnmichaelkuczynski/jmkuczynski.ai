@@ -27,16 +27,14 @@ The centerpiece: a draggable, resizable dialogue window that channels Kuczynski'
 - **Answer Length Control** — From *Super Concise* (50 words) to *Detailed* (1,200 words). You decide how deep the answer goes.
 - **Bullet-Point Mode** — One click reformats replies as clean, scannable bullets.
 - **Downloadable Transcripts** — Export any exchange as a text file with a single click.
-- **Google Sign-In Gate** — Conversation requires a Google login; browsing the record never does.
+- **Open Access** — Every visitor can ask questions, use voice input, and receive spoken replies immediately.
 
 ---
 
-## 🔒 Owner-Only Command Center
+## 📊 Built-In Management & Analytics
 
-The public sees a polished showcase. The owner sees more:
-
-- **Private Visitor Analytics** — A unique-visitor counter visible *only* to the owner's Google account. Anonymous, cookie-based, no personal data collected.
-- **Admin-Gated Management** — Timeline and content-management pages are invisible and inaccessible to everyone but the owner. All content mutations are locked server-side to a single authorized email.
+- **Visitor Analytics** — An anonymous, cookie-based unique-visitor counter with no personal data collection.
+- **Open Management Tools** — Timeline and content-management pages remain available without a login.
 - **Profile & Record Editing** — Update the headline, accomplishments, and featured items directly from the browser.
 
 ---
@@ -46,18 +44,15 @@ The public sees a polished showcase. The owner sees more:
 - **pnpm Monorepo Architecture** — Separate web frontend and API server artifacts sharing typed libraries.
 - **Contract-First API** — Single OpenAPI document; React Query hooks for the UI and Zod validators for the server are generated from it.
 - **AssemblyAI Speech-to-Text Pipeline** — Browser audio capture → raw upload → transcription job → polled result, with abort timeouts at every hop and per-user rate limiting to protect the API quota.
-- **Signed-Session Auth** — HMAC-signed, HTTP-only session cookies via Google OAuth. No third-party session store.
-- **Server-Side Admin Enforcement** — Every mutation route checks the session email against the owner allowlist; the UI hiding is a convenience, the server check is the wall.
+- **Login-Free Access** — All dialogue, voice, analytics, timeline, diagnostics, uploads, and management capabilities work without authentication.
 - **Self-Rate-Limited AI Channel** — The dialogue proxy enforces per-IP limits to protect the shared upstream key.
-- **Unique-Visitor Tracking** — PostgreSQL (Drizzle ORM) with cookie-deduplicated visitor rows; count exposed only through an admin-gated endpoint.
+- **Unique-Visitor Tracking** — PostgreSQL (Drizzle ORM) with cookie-deduplicated visitor rows and a live public count.
 - **Full SEO Layer** — Rich meta tags, Open Graph and Twitter cards, JSON-LD structured data (Person + WebSite), robots.txt, and sitemap.
 
 ---
 
 ## 🔑 Required Secrets
 
-- `SESSION_SECRET` — signed-session cookie secret.
-- `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` — Google OAuth sign-in.
 - `KUCZYNSKI_BOT_API` — upstream key for the Ask Dr. K dialogue channel.
 - `ASSEMBLYAI_API_KEY` — powers voice-to-text transcription.
 - `DATABASE_URL` — PostgreSQL connection string (provisioned automatically on Replit).
@@ -74,7 +69,7 @@ The public sees a polished showcase. The owner sees more:
 
 ## 🏗️ Stack
 
-React 18 · Vite · TypeScript · Tailwind CSS · Express · PostgreSQL · Drizzle ORM · AssemblyAI · Google OAuth · pnpm workspaces
+React 18 · Vite · TypeScript · Tailwind CSS · Express · PostgreSQL · Drizzle ORM · AssemblyAI · pnpm workspaces
 
 ---
 

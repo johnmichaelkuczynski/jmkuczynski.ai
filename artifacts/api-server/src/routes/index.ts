@@ -7,12 +7,10 @@ import storageRouter from "./storage";
 import channelRouter from "./channel";
 import transcribeRouter from "./transcribe";
 import visitsRouter from "./visits";
-import authRouter from "./auth";
 
 const router: IRouter = Router();
 
 router.use(healthRouter);
-router.use(authRouter);
 router.use(profileRouter);
 router.use(accomplishmentsRouter);
 router.use(insightsRouter);

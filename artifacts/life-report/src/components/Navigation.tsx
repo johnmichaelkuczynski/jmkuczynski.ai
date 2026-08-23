@@ -3,27 +3,17 @@ import { Link, useLocation } from 'wouter';
 import { BookOpen, Calendar, Settings, Archive, MessageSquare, Mail, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useDialogue } from '@/contexts/DialogueContext';
-import { useAuth } from '@/contexts/AuthContext';
 
 export function Navigation({ children }: { children: ReactNode }) {
   const [location] = useLocation();
   const { openDialogue } = useDialogue();
-  const { user, loading, login, logout } = useAuth();
   const [visitorCount, setVisitorCount] = useState<number | null>(null);
 
-  // Record this visit once per page load (anonymous, cookie-based).
+  // Record this visit once per page load, then refresh the public count.
   useEffect(() => {
-    void fetch(`${import.meta.env.BASE_URL}api/visit`, { method: 'POST' }).catch(() => {});
-  }, []);
-
-  // Owner-only: load the unique visitor count.
-  useEffect(() => {
-    if (!user?.isAdmin) {
-      setVisitorCount(null);
-      return;
-    }
     let cancelled = false;
-    fetch(`${import.meta.env.BASE_URL}api/visits/stats`)
+    fetch(`${import.meta.env.BASE_URL}api/visit`, { method: 'POST' })
+      .then(() => fetch(`${import.meta.env.BASE_URL}api/visits/stats`))
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
         if (!cancelled && data && typeof data.uniqueVisitors === 'number') {
@@ -34,15 +24,13 @@ export function Navigation({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [user?.isAdmin]);
+  }, []);
 
-  const navItems = user?.isAdmin
-    ? [
-        { href: '/', label: 'Dossier', icon: BookOpen },
-        { href: '/timeline', label: 'Timeline', icon: Calendar },
-        { href: '/manage', label: 'Manage', icon: Settings },
-      ]
-    : [];
+  const navItems = [
+    { href: '/', label: 'Dossier', icon: BookOpen },
+    { href: '/timeline', label: 'Timeline', icon: Calendar },
+    { href: '/manage', label: 'Manage', icon: Settings },
+  ];
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row w-full bg-background">
@@ -84,33 +72,11 @@ export function Navigation({ children }: { children: ReactNode }) {
           </div>
         </nav>
         <div className="p-4 border-t border-border space-y-3">
-          {user?.isAdmin && visitorCount !== null && (
-            <div className="flex items-center gap-2 px-1 text-[10px] font-mono uppercase tracking-widest text-muted-foreground" title="Unique visitors (only you can see this)">
+          {visitorCount !== null && (
+            <div className="flex items-center gap-2 px-1 text-[10px] font-mono uppercase tracking-widest text-muted-foreground" title="Unique visitors">
               <Users className="w-3.5 h-3.5 text-primary" />
               {visitorCount.toLocaleString()} unique visitor{visitorCount === 1 ? '' : 's'}
             </div>
-          )}
-          {!loading && (
-            user ? (
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-[10px] font-mono text-muted-foreground truncate" title={user.email}>
-                  {user.name}
-                </span>
-                <button
-                  onClick={logout}
-                  className="text-[10px] font-mono uppercase tracking-widest text-primary hover:underline shrink-0"
-                >
-                  Sign out
-                </button>
-              </div>
-            ) : (
-              <button
-                onClick={login}
-                className="w-full text-[10px] font-mono uppercase tracking-widest text-primary border border-primary/30 hover:bg-primary/5 py-2 transition-colors"
-              >
-                Sign in with Google
-              </button>
-            )
           )}
           <p className="text-[10px] text-muted-foreground font-mono text-center">
             Updated {new Date().toLocaleDateString()}
@@ -125,8 +91,8 @@ export function Navigation({ children }: { children: ReactNode }) {
           AI-Powered Courses
         </div>
         <div className="flex items-center gap-2">
-          {user?.isAdmin && visitorCount !== null && (
-            <span className="flex items-center gap-1.5 px-2 py-1 text-[10px] font-mono text-muted-foreground border border-border" title="Unique visitors (only you can see this)">
+          {visitorCount !== null && (
+            <span className="flex items-center gap-1.5 px-2 py-1 text-[10px] font-mono text-muted-foreground border border-border" title="Unique visitors">
               <Users className="w-3.5 h-3.5 text-primary" />
               {visitorCount.toLocaleString()}
             </span>

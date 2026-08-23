@@ -2,7 +2,6 @@ import crypto from "node:crypto";
 import { Router, type IRouter } from "express";
 import { sql } from "drizzle-orm";
 import { db, visitorsTable } from "@workspace/db";
-import { requireAdmin } from "../lib/admin";
 
 const router: IRouter = Router();
 
@@ -39,8 +38,8 @@ router.post("/visit", async (req, res): Promise<void> => {
   }
 });
 
-// Admin-only unique visitor count.
-router.get("/visits/stats", requireAdmin, async (req, res): Promise<void> => {
+// Public unique visitor count.
+router.get("/visits/stats", async (req, res): Promise<void> => {
   try {
     const [row] = await db
       .select({ count: sql<number>`count(*)::int` })

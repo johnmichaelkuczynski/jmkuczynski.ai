@@ -1,6 +1,5 @@
 import { Router, type IRouter } from "express";
 import express from "express";
-import { getSession } from "../lib/session";
 
 const router: IRouter = Router();
 
@@ -9,9 +8,7 @@ const MAX_AUDIO_BYTES = 25 * 1024 * 1024;
 const POLL_INTERVAL_MS = 1000;
 const POLL_TIMEOUT_MS = 60_000;
 
-// Light per-user rate limit: transcription jobs are billable upstream.
-// Keyed by authenticated session subject, not IP, since trust proxy is
-// enabled and forwarded-for headers are spoofable.
+// Light anonymous-visitor rate limit: transcription jobs are billable upstream.
 const WINDOW_MS = 5 * 60 * 1000;
 const MAX_PER_WINDOW = 20;
 const hits = new Map<string, number[]>();
@@ -34,13 +31,11 @@ router.post(
   "/transcribe",
   express.raw({ type: ["audio/*", "video/webm", "video/mp4"], limit: MAX_AUDIO_BYTES }),
   async (req, res): Promise<void> => {
-    const session = getSession(req);
-    if (!session) {
-      res.status(401).json({ error: "Please sign in with Google to use voice input." });
-      return;
-    }
-
-    if (rateLimited(session.sub)) {
+    const visitorId =
+      (req as typeof req & { cookies?: Record<string, string> }).cookies?.["lr_visitor"] ??
+      req.ip ??
+      "unknown";
+    if (rateLimited(visitorId)) {
       res.status(429).json({ error: "Too many voice requests. Please wait a few minutes." });
       return;
     }

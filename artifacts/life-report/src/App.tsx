@@ -13,8 +13,6 @@ import { Timeline } from '@/pages/Timeline';
 import { Manage } from '@/pages/Manage';
 import { DialogueProvider } from '@/contexts/DialogueContext';
 import { DialogueWindow } from '@/components/DialogueWindow';
-import { AuthProvider, useAuth } from '@/contexts/AuthContext';
-import { LoginPrompt } from '@/components/LoginPrompt';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -31,28 +29,13 @@ function Router() {
       <RoutedErrorBoundary>
         <Switch>
           <Route path="/" component={Home} />
-          <Route path="/timeline">
-            <AdminOnly>
-              <Timeline />
-            </AdminOnly>
-          </Route>
-          <Route path="/manage">
-            <AdminOnly>
-              <Manage />
-            </AdminOnly>
-          </Route>
+          <Route path="/timeline" component={Timeline} />
+          <Route path="/manage" component={Manage} />
           <Route component={NotFound} />
         </Switch>
       </RoutedErrorBoundary>
     </Navigation>
   );
-}
-
-function AdminOnly({ children }: { children: ReactNode }) {
-  const { user, loading } = useAuth();
-  if (loading) return null;
-  if (!user?.isAdmin) return <NotFound />;
-  return <>{children}</>;
 }
 
 function RoutedErrorBoundary({ children }: { children: ReactNode }) {
@@ -64,16 +47,13 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <AuthProvider>
         <DialogueProvider>
           <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
             <Router />
           </WouterRouter>
           <DialogueWindow />
-          <LoginPrompt />
           <Toaster />
         </DialogueProvider>
-        </AuthProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );
