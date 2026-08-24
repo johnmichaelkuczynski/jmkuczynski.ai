@@ -100,7 +100,7 @@ const KEY_APPS: ColumnItem[] = [
   { label: 'Frame Shot', url: 'https://frameshot.xyz' },
   { label: 'Graphic Novel Creator', url: 'https://graphicnovelcreator.xyz' },
   { label: 'OCR Pro', url: 'https://ocrman.shop' },
-  { label: 'Photo Psychoanalysis', url: 'https://photopsychoanalysis.xyz' },
+  { label: 'Photo Psychoanalysis', url: 'https://photopsychoanalysis.ink' },
   { label: 'Multiple Video Viewer', url: 'https://multivideo.ink' },
   { label: 'Audio Transcriber Plus', url: 'https://audiotranscriber.ink' },
   { label: 'Podcast Creator', url: 'https://ezpodcast.xyz' },

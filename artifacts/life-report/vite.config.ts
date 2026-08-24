@@ -30,6 +30,15 @@ if (!basePath) {
 export default defineConfig({
   base: basePath,
   plugins: [
+    {
+      name: 'normalize-photo-psychoanalysis-domain',
+      transformIndexHtml(html) {
+        return html.replaceAll(
+          'https://photopsychoanalysis.xyz',
+          'https://photopsychoanalysis.ink',
+        );
+      },
+    },
     react(),
     tailwindcss(),
     runtimeErrorOverlay(),
