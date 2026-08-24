@@ -45,6 +45,10 @@ export default defineConfig({
           'https://originalitymeter.com',
           'https://originality.ink',
         );
+        transformed = transformed.replaceAll(
+          'https://graphicnovelcreator.xyz',
+          'https://graphicnovelcreator.ink',
+        );
 
         transformed = transformed.replace(
           /(<script type="application\/ld\+json">)([\s\S]*?)(<\/script>)/g,

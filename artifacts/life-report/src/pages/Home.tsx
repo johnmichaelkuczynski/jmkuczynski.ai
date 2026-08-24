@@ -101,7 +101,7 @@ const KEY_APPS: ColumnItem[] = [
   { label: 'LLM Plus', url: 'https://llmplus.ink' },
   { label: 'FrameWise', url: 'https://framewise.ink' },
   { label: 'Frame Shot', url: 'https://frameshot.xyz' },
-  { label: 'Graphic Novel Creator', url: 'https://graphicnovelcreator.xyz' },
+  { label: 'Graphic Novel Creator', url: 'https://graphicnovelcreator.ink' },
   { label: 'OCR Pro', url: 'https://ocrman.shop' },
   { label: 'Photo Psychoanalysis', url: 'https://photopsychoanalysis.ink' },
   { label: 'Multiple Video Viewer', url: 'https://multivideo.ink' },
