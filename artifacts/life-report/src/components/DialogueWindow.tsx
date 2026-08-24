@@ -1,9 +1,10 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useDialogue } from '@/contexts/DialogueContext';
-import { X, Maximize2, Minimize2, GripHorizontal, Download, Mic, MicOff, Volume2, VolumeX, List } from 'lucide-react';
+import { X, ArrowLeft, Maximize2, Minimize2, GripHorizontal, Download, Mic, MicOff, Volume2, VolumeX, List, MessageSquare } from 'lucide-react';
 import { useChannelKuczynski } from '@workspace/api-client-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { useLocation } from 'wouter';
 
 function MessageText({ content }: { content: string }) {
   const paragraphs = content.split(/\n+/).filter(p => p.trim() !== '');
@@ -38,8 +39,17 @@ const LENGTH_OPTIONS: { key: LengthKey; label: string; maxWords?: number }[] = [
 ];
 
 export function DialogueWindow() {
-  const { isOpen, closeDialogue, history, setHistory } = useDialogue();
+  const {
+    isOpen,
+    isMinimized,
+    closeDialogue,
+    minimizeDialogue,
+    restoreDialogue,
+    history,
+    setHistory,
+  } = useDialogue();
   const channel = useChannelKuczynski();
+  const [, setLocation] = useLocation();
   
   const [input, setInput] = useState('');
   const [isMaximized, setIsMaximized] = useState(false);
@@ -217,7 +227,7 @@ export function DialogueWindow() {
   const dragStart = useRef({ x: 0, y: 0, posX: 0, posY: 0 });
   const onDragPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (isMaximized || isMobile) return;
-    if ((e.target as HTMLElement).closest('button')) return;
+    if ((e.target as HTMLElement).closest('button, a, input, textarea, select')) return;
     e.currentTarget.setPointerCapture(e.pointerId);
     dragStart.current = { x: e.clientX, y: e.clientY, posX: position.x, posY: position.y };
   };
@@ -255,6 +265,37 @@ export function DialogueWindow() {
   };
 
   if (!isOpen) return null;
+
+  const returnToMainPage = () => {
+    closeDialogue();
+    setLocation('/');
+  };
+
+  if (isMinimized) {
+    return (
+      <div className="fixed top-3 left-3 z-[100] flex items-center border border-border bg-card text-foreground shadow-xl">
+        <button
+          type="button"
+          onClick={restoreDialogue}
+          className="flex items-center gap-2 px-3 py-2 text-xs font-mono uppercase tracking-widest text-primary hover:bg-primary/10 transition-colors"
+          aria-label="Restore Ask Dr. K chat"
+        >
+          <MessageSquare className="w-4 h-4" />
+          <span>Ask Dr. K</span>
+        </button>
+        <button
+          type="button"
+          onClick={returnToMainPage}
+          className="flex items-center gap-1 border-l border-border px-3 py-2 text-xs font-mono uppercase tracking-widest text-muted-foreground hover:bg-primary/10 hover:text-primary transition-colors"
+          aria-label="Return to main page"
+          title="Return to main page"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span className="hidden sm:inline">Main page</span>
+        </button>
+      </div>
+    );
+  }
 
   const isFullScreen = isMobile || isMaximized;
   const style: React.CSSProperties = isFullScreen
@@ -314,6 +355,16 @@ export function DialogueWindow() {
         onPointerUp={onDragPointerUp}
       >
         <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={returnToMainPage}
+            className="flex items-center gap-1.5 border border-primary/30 px-2 py-1 text-[10px] font-mono uppercase tracking-widest text-primary hover:bg-primary/10 transition-colors shrink-0"
+            aria-label="Return to main page"
+            title="Return to main page"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Main page</span>
+          </button>
           <GripHorizontal className="w-4 h-4 opacity-50" />
           <img
             src={`${import.meta.env.BASE_URL}avatar.png`}
@@ -341,6 +392,18 @@ export function DialogueWindow() {
             className={cn('p-1 transition-colors', speakReplies ? 'text-primary bg-primary/10' : 'hover:bg-secondary-foreground/10')}
           >
             {speakReplies ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setIsMaximized(false);
+              minimizeDialogue();
+            }}
+            className="p-1 hover:bg-secondary-foreground/10 transition-colors"
+            aria-label="Minimize chat"
+            title="Minimize chat"
+          >
+            <Minimize2 className="w-4 h-4" />
           </button>
           {!isMobile && (
             <button onClick={() => setIsMaximized(!isMaximized)} className="p-1 hover:bg-secondary-foreground/10 transition-colors">

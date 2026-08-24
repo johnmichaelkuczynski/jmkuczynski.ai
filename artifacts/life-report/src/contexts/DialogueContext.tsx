@@ -7,8 +7,11 @@ export interface MinimalChannelMessage {
 
 interface DialogueContextType {
   isOpen: boolean;
+  isMinimized: boolean;
   openDialogue: () => void;
   closeDialogue: () => void;
+  minimizeDialogue: () => void;
+  restoreDialogue: () => void;
   history: MinimalChannelMessage[];
   setHistory: React.Dispatch<React.SetStateAction<MinimalChannelMessage[]>>;
 }
@@ -17,13 +20,20 @@ const DialogueContext = createContext<DialogueContextType | null>(null);
 
 export function DialogueProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(false);
   const [history, setHistory] = useState<MinimalChannelMessage[]>([]);
 
   return (
     <DialogueContext.Provider value={{
       isOpen,
-      openDialogue: () => setIsOpen(true),
+      isMinimized,
+      openDialogue: () => {
+        setIsOpen(true);
+        setIsMinimized(false);
+      },
       closeDialogue: () => setIsOpen(false),
+      minimizeDialogue: () => setIsMinimized(true),
+      restoreDialogue: () => setIsMinimized(false),
       history,
       setHistory
     }}>
