@@ -91,7 +91,7 @@ const KEY_APPS: ColumnItem[] = [
   { label: 'Genius 101', url: 'https://genius101.xyz' },
   { label: 'Freud GPT', url: 'https://freudgpt.me' },
   { label: 'Model Builder', url: 'https://modelwiz.xyz' },
-  { label: 'Originality Meter', url: 'https://originalitymeter.com' },
+  { label: 'Originality Meter', url: 'https://originality.ink' },
   { label: 'Intelligence Meter', url: 'https://intelmeter.ink' },
   { label: 'Mind Profiler', url: 'https://mindprofiler.ink' },
   { label: 'Mind Probe', url: 'https://mindprobe.ink' },

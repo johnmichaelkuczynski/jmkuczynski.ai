@@ -41,6 +41,10 @@ export default defineConfig({
           'https://iq101.ink',
           'https://intelmeter.ink',
         );
+        transformed = transformed.replaceAll(
+          'https://originalitymeter.com',
+          'https://originality.ink',
+        );
 
         transformed = transformed.replace(
           /(<script type="application\/ld\+json">)([\s\S]*?)(<\/script>)/g,
