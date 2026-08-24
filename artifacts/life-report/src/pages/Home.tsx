@@ -15,6 +15,7 @@ interface ColumnItem { label: string; url?: string }
 
 const AI_COURSES: ColumnItem[] = [
   { label: 'AI 101', url: 'https://ai101.ink' },
+  { label: 'AI Integration Ethical AI & Governance Technology', url: 'https://aigovernance.ink' },
   { label: 'AI Logic', url: 'https://ailogiccourse.xyz' },
   { label: 'AI Math', url: 'https://babyaimath.xyz' },
   { label: 'Analytic Philosophy', url: 'https://analyticphilosophy101.ink' },
@@ -45,6 +46,7 @@ const AI_COURSES: ColumnItem[] = [
   { label: 'Know Thyself', url: 'https://minikinowthyself.ink' },
   { label: 'Lambda Calculus', url: 'https://basiclambdacalculus.xyz' },
   { label: 'Machine Learning and Applied AI', url: 'https://machinelearning101.xyz' },
+  { label: 'Machine Learning Operations', url: 'https://mlops.ink' },
   { label: 'Marketing Analytics', url: 'https://babymarketinganalytics.xyz' },
   { label: 'Math Notation', url: 'https://mathnotation.ink' },
   { label: 'Operations & Supply Chain Analytics', url: 'https://babysupplychain.xyz' },
@@ -54,6 +56,7 @@ const AI_COURSES: ColumnItem[] = [
   { label: 'Predictive Analytics', url: 'https://babypredictiveanalytics.xyz' },
   { label: 'Programming (Python-based CS 1 / Computational Thinking)', url: 'https://python101.xyz' },
   { label: 'Prompt Engineering', url: 'https://promptengineering.ink' },
+  { label: 'Prompt Engineering for AI Generative', url: 'https://generativeai.ink' },
   { label: 'Psychodynamic Therapy 101', url: 'https://psychodynamictherapy.xyz' },
   { label: 'Psychodynamic Treatment of BPD 101', url: 'https://psychodynamicbpdtherapy.xyz' },
   { label: 'Psychodynamic Treatment of OCD 101', url: 'https://psychodynamicocdtherapy.xyz' },
