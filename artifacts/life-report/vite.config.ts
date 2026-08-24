@@ -37,6 +37,10 @@ export default defineConfig({
           'https://photopsychoanalysis.xyz',
           'https://photopsychoanalysis.ink',
         );
+        transformed = transformed.replaceAll(
+          'https://iq101.ink',
+          'https://intelmeter.ink',
+        );
 
         transformed = transformed.replace(
           /(<script type="application\/ld\+json">)([\s\S]*?)(<\/script>)/g,
