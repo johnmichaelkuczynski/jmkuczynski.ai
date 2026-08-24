@@ -114,6 +114,12 @@ export default defineConfig({
             ' · <a href="https://aigovernance.ink">AI Integration Ethical AI &amp; Governance Technology</a> · <a href="https://generativeai.ink">Prompt Engineering for AI Generative</a> · <a href="https://mlops.ink">Machine Learning Operations</a></p><h2>Key Apps</h2>',
           );
         }
+        if (!transformed.includes('https://findyourself.ink')) {
+          transformed = transformed.replace(
+            '</p></main></noscript>',
+            ' · <a href="https://findyourself.ink">Find Yourself</a></p></main></noscript>',
+          );
+        }
 
         return transformed;
       },
