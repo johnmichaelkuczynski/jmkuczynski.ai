@@ -55,7 +55,7 @@ export default defineConfig({
         );
         transformed = transformed.replace(
           '51 AI-powered interactive courses and 39 AI applications',
-          '54 AI-powered interactive courses and 40 AI applications',
+          '55 AI-powered interactive courses and 41 AI applications',
         );
 
         transformed = transformed.replace(
@@ -99,6 +99,10 @@ export default defineConfig({
                     name: 'Machine Learning Operations',
                     url: 'https://mlops.ink',
                   },
+                  {
+                    name: 'Cloud Architecture',
+                    url: 'https://cloudarchitecture.ink',
+                  },
                 ];
                 const existingUrls = new Set(
                   courseList.itemListElement.map((entry) => entry?.item?.url),
@@ -126,17 +130,27 @@ export default defineConfig({
                 const existingUrls = new Set(
                   appList.itemListElement.map((entry) => entry?.item?.url),
                 );
-                if (!existingUrls.has('https://cognitivecareer.xyz')) {
+                [
+                  {
+                    name: 'Cognitive Career Profiler',
+                    url: 'https://cognitivecareer.xyz',
+                  },
+                  {
+                    name: 'Black Jesus',
+                    url: 'https://blackjesus.ink',
+                  },
+                ].forEach(({ name, url }) => {
+                  if (existingUrls.has(url)) return;
                   appList.itemListElement.push({
                     '@type': 'ListItem',
                     position: appList.itemListElement.length + 1,
                     item: {
                       '@type': 'SoftwareApplication',
-                      name: 'Cognitive Career Profiler',
-                      url: 'https://cognitivecareer.xyz',
+                      name,
+                      url,
                     },
                   });
-                }
+                });
                 appList.numberOfItems = appList.itemListElement.length;
               }
 
@@ -153,7 +167,7 @@ export default defineConfig({
         );
         transformed = transformed.replace(
           '</p></main></noscript>',
-          ' · <a href="https://cognitivecareer.xyz">Cognitive Career Profiler</a></p></main></noscript>',
+          ' · <a href="https://cognitivecareer.xyz">Cognitive Career Profiler</a> · <a href="https://blackjesus.ink">Black Jesus</a></p></main></noscript>',
         );
 
         return transformed;

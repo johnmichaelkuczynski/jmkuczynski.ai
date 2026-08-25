@@ -21,6 +21,7 @@ const AI_COURSES: ColumnItem[] = [
   { label: 'Analytic Philosophy', url: 'https://analyticphilosophy101.ink' },
   { label: 'Biology', url: 'https://biology101.xyz' },
   { label: 'Business Ethics', url: 'https://businessethics101.ink' },
+  { label: 'Cloud Architecture', url: 'https://cloudarchitecture.ink' },
   { label: 'Cognitive Science 101', url: 'https://babycognitivescience101.xyz' },
   { label: 'Computer Systems', url: 'https://computersystems101.xyz' },
   { label: 'Conceptual Mathematics', url: 'https://conceptualmath.ink' },
@@ -73,6 +74,7 @@ const AI_COURSES: ColumnItem[] = [
 const KEY_APPS: ColumnItem[] = [
   { label: 'Living Book Creator', url: 'https://livingbookcreator.xyz' },
   { label: 'Book Builder', url: 'https://bookbuilder.ink' },
+  { label: 'Black Jesus', url: 'https://blackjesus.ink' },
   { label: 'Genius Dictation', url: 'https://geniusdictation.com' },
   { label: 'EZ Reader', url: 'https://ezreader.ai' },
   { label: 'Classic EZ Reader', url: 'https://classicezreader.ink' },
