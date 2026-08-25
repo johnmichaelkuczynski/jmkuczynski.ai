@@ -104,19 +104,19 @@ export function Timeline() {
                      {item.metric && <span className="text-primary font-bold bg-primary/5 px-1.5 py-0.5">{item.metric}</span>}
                      
                      {item.links?.map((lnk, i) => (
-                       <GatedLink key={i} href={lnk.url} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-foreground hover:text-primary">
+                        <GatedLink key={i} href={lnk.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-foreground hover:text-primary">
                          <LinkIcon className="w-3 h-3" />
                          {lnk.label}
                        </GatedLink>
                      ))}
                      {item.filePath && (
-                       <GatedLink href={`/api/storage${item.filePath}`} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-primary font-bold">
+                        <GatedLink href={`/api/storage${item.filePath}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-primary font-bold">
                          <Paperclip className="w-3 h-3" />
                          PDF
                        </GatedLink>
                      )}
                      {item.link && (!item.links || item.links.length === 0) && (
-                       <GatedLink href={item.link} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-foreground hover:text-primary">
+                        <GatedLink href={item.link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-foreground hover:text-primary">
                          <LinkIcon className="w-3 h-3" />
                          Link
                        </GatedLink>

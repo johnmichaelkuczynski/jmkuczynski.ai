@@ -127,7 +127,7 @@ function Column({ title, items }: { title: string; items: ColumnItem[] }) {
                 <GatedLink
                   href={item.url}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   className="text-foreground hover:text-primary hover:underline underline-offset-2 transition-colors"
                 >
                   {item.label}
@@ -171,7 +171,10 @@ export function Home() {
           <div className="space-y-4">
             <img
               src={`${import.meta.env.BASE_URL}avatar.png`}
-              alt={profile.fullName}
+              alt={`${profile.fullName}, AI courseware developer`}
+              width={144}
+              height={144}
+              fetchPriority="high"
               className="w-28 h-28 md:w-36 md:h-36 object-cover border-2 border-primary/40 shadow-md animate-in fade-in duration-700"
             />
             <h1 className="font-serif text-6xl md:text-8xl tracking-tight text-primary animate-in fade-in slide-in-from-bottom-8 duration-700">
@@ -188,7 +191,7 @@ export function Home() {
                 key={lnk.label}
                 href={lnk.url}
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 className="flex items-center gap-2 text-foreground hover:text-primary transition-colors underline-offset-4 hover:underline"
               >
                 <ExternalLink className="w-3.5 h-3.5 text-primary" />

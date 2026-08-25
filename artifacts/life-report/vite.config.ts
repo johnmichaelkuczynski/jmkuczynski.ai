@@ -53,6 +53,10 @@ export default defineConfig({
           'https://findyourself.ink',
           'https://cognitivecareer.xyz',
         );
+        transformed = transformed.replace(
+          '51 AI-powered interactive courses and 39 AI applications',
+          '54 AI-powered interactive courses and 40 AI applications',
+        );
 
         transformed = transformed.replace(
           /(<script type="application\/ld\+json">)([\s\S]*?)(<\/script>)/g,
@@ -66,45 +70,76 @@ export default defineConfig({
                       entry?.['@id'] === 'https://jmkuczynski.ai/#courses',
                   )
                 : null;
+              const appList = Array.isArray(document)
+                ? document.find(
+                    (entry) =>
+                      entry?.['@type'] === 'ItemList' &&
+                      entry?.['@id'] === 'https://jmkuczynski.ai/#apps',
+                  )
+                : null;
 
-              if (!courseList || !Array.isArray(courseList.itemListElement)) {
+              if (
+                (!courseList || !Array.isArray(courseList.itemListElement)) &&
+                (!appList || !Array.isArray(appList.itemListElement))
+              ) {
                 return `${open}${json}${close}`;
               }
 
-              const additions = [
-                {
-                  name: 'AI Integration Ethical AI & Governance Technology',
-                  url: 'https://aigovernance.ink',
-                },
-                {
-                  name: 'Prompt Engineering for AI Generative',
-                  url: 'https://generativeai.ink',
-                },
-                {
-                  name: 'Machine Learning Operations',
-                  url: 'https://mlops.ink',
-                },
-              ];
-              const existingUrls = new Set(
-                courseList.itemListElement.map((entry) => entry?.item?.url),
-              );
-              const provider = { '@id': 'https://jmkuczynski.ai/#person' };
-
-              additions.forEach(({ name, url }) => {
-                if (existingUrls.has(url)) return;
-                courseList.itemListElement.push({
-                  '@type': 'ListItem',
-                  position: courseList.itemListElement.length + 1,
-                  item: {
-                    '@type': 'Course',
-                    name,
-                    url,
-                    provider,
-                    offers: { '@type': 'Offer', category: 'Online Course' },
+              if (courseList && Array.isArray(courseList.itemListElement)) {
+                const additions = [
+                  {
+                    name: 'AI Integration Ethical AI & Governance Technology',
+                    url: 'https://aigovernance.ink',
                   },
+                  {
+                    name: 'Prompt Engineering for AI Generative',
+                    url: 'https://generativeai.ink',
+                  },
+                  {
+                    name: 'Machine Learning Operations',
+                    url: 'https://mlops.ink',
+                  },
+                ];
+                const existingUrls = new Set(
+                  courseList.itemListElement.map((entry) => entry?.item?.url),
+                );
+                const provider = { '@id': 'https://jmkuczynski.ai/#person' };
+
+                additions.forEach(({ name, url }) => {
+                  if (existingUrls.has(url)) return;
+                  courseList.itemListElement.push({
+                    '@type': 'ListItem',
+                    position: courseList.itemListElement.length + 1,
+                    item: {
+                      '@type': 'Course',
+                      name,
+                      url,
+                      provider,
+                      offers: { '@type': 'Offer', category: 'Online Course' },
+                    },
+                  });
                 });
-              });
-              courseList.numberOfItems = courseList.itemListElement.length;
+                courseList.numberOfItems = courseList.itemListElement.length;
+              }
+
+              if (appList && Array.isArray(appList.itemListElement)) {
+                const existingUrls = new Set(
+                  appList.itemListElement.map((entry) => entry?.item?.url),
+                );
+                if (!existingUrls.has('https://cognitivecareer.xyz')) {
+                  appList.itemListElement.push({
+                    '@type': 'ListItem',
+                    position: appList.itemListElement.length + 1,
+                    item: {
+                      '@type': 'SoftwareApplication',
+                      name: 'Cognitive Career Profiler',
+                      url: 'https://cognitivecareer.xyz',
+                    },
+                  });
+                }
+                appList.numberOfItems = appList.itemListElement.length;
+              }
+
               return `${open}${JSON.stringify(document)}${close}`;
             } catch {
               return `${open}${json}${close}`;
@@ -112,18 +147,14 @@ export default defineConfig({
           },
         );
 
-        if (!transformed.includes('https://generativeai.ink')) {
-          transformed = transformed.replace(
-            '</p><h2>Key Apps</h2>',
-            ' · <a href="https://aigovernance.ink">AI Integration Ethical AI &amp; Governance Technology</a> · <a href="https://generativeai.ink">Prompt Engineering for AI Generative</a> · <a href="https://mlops.ink">Machine Learning Operations</a></p><h2>Key Apps</h2>',
-          );
-        }
-        if (!transformed.includes('https://cognitivecareer.xyz')) {
-          transformed = transformed.replace(
-            '</p></main></noscript>',
-            ' · <a href="https://cognitivecareer.xyz">Cognitive Career Profiler</a></p></main></noscript>',
-          );
-        }
+        transformed = transformed.replace(
+          '</p><h2>Key Apps</h2>',
+          ' · <a href="https://aigovernance.ink">AI Integration Ethical AI &amp; Governance Technology</a> · <a href="https://generativeai.ink">Prompt Engineering for AI Generative</a> · <a href="https://mlops.ink">Machine Learning Operations</a></p><h2>Key Apps</h2>',
+        );
+        transformed = transformed.replace(
+          '</p></main></noscript>',
+          ' · <a href="https://cognitivecareer.xyz">Cognitive Career Profiler</a></p></main></noscript>',
+        );
 
         return transformed;
       },
