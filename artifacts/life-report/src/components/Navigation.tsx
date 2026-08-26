@@ -42,7 +42,7 @@ export function Navigation({ children }: { children: ReactNode }) {
             AI-Powered Courses
           </div>
           <a
-            href="mailto:zhi@zhisystems.org"
+            href="mailto:jmkuczynski@yahoo.com"
             className="mt-4 flex items-center justify-center gap-2 px-4 py-2 text-xs font-mono uppercase tracking-widest font-bold text-primary-foreground bg-primary hover:bg-primary/90 transition-colors"
           >
             <Mail className="w-3.5 h-3.5" />
@@ -97,7 +97,7 @@ export function Navigation({ children }: { children: ReactNode }) {
               {visitorCount.toLocaleString()}
             </span>
           )}
-          <a href="mailto:zhi@zhisystems.org" className="p-2 bg-primary text-primary-foreground flex items-center justify-center" aria-label="Contact Me">
+          <a href="mailto:jmkuczynski@yahoo.com" className="p-2 bg-primary text-primary-foreground flex items-center justify-center" aria-label="Contact Me">
             <Mail className="w-4 h-4" />
           </a>
           <button onClick={openDialogue} className="p-2 bg-primary/10 text-primary border border-primary/20 flex items-center justify-center cursor-pointer">
