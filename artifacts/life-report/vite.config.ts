@@ -53,6 +53,10 @@ export default defineConfig({
           'https://findyourself.ink',
           'https://cognitivecareer.xyz',
         );
+        transformed = transformed.replaceAll(
+          'https://modeltransformer.xyz',
+          'https://modeltransformer.ink',
+        );
         transformed = transformed.replace(
           '51 AI-powered interactive courses and 39 AI applications',
           '55 AI-powered interactive courses and 41 AI applications',
