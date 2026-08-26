@@ -75,6 +75,7 @@ const KEY_APPS: ColumnItem[] = [
   { label: 'Living Book Creator', url: 'https://livingbookcreator.xyz' },
   { label: 'Book Builder', url: 'https://bookbuilder.ink' },
   { label: 'Black Jesus', url: 'https://blackjesus.ink' },
+  { label: 'Metaethics', url: 'https://metaethics.ink' },
   { label: 'Genius Dictation', url: 'https://geniusdictation.com' },
   { label: 'EZ Reader', url: 'https://ezreader.ai' },
   { label: 'Classic EZ Reader', url: 'https://classicezreader.ink' },
