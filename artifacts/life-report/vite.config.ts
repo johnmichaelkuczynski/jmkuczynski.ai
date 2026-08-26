@@ -57,6 +57,10 @@ export default defineConfig({
           'https://modeltransformer.xyz',
           'https://modeltransformer.ink',
         );
+        transformed = transformed.replaceAll(
+          'https://ethics101.xyz',
+          'https://ethics101.ink',
+        );
         transformed = transformed.replace(
           '51 AI-powered interactive courses and 39 AI applications',
           '55 AI-powered interactive courses and 41 AI applications',

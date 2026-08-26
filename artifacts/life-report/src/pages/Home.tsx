@@ -36,7 +36,7 @@ const AI_COURSES: ColumnItem[] = [
   { label: 'Developmental Psychology', url: 'https://babydevelopmentalpsychology.xyz' },
   { label: 'Diagonalization and Incompleteness', url: 'https://diagonalization.xyz' },
   { label: 'Discrete Math', url: 'https://basicdiscretemath.xyz' },
-  { label: 'Ethics', url: 'https://ethics101.xyz' },
+  { label: 'Ethics', url: 'https://ethics101.ink' },
   { label: 'Evolutionary Psychology', url: 'https://evopsych.xyz' },
   { label: 'Finance', url: 'https://finance101.xyz' },
   { label: 'Financial & Managerial Analytics', url: 'https://babyfinancialanalytics.xyz' },
