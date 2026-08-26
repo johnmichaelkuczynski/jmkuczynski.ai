@@ -44,7 +44,7 @@ const AI_COURSES: ColumnItem[] = [
   { label: 'Formal Logic', url: 'https://formallogic.xyz' },
   { label: 'IQ Booster', url: 'https://iqbooster.xyz' },
   { label: 'Infinite Series', url: 'https://babyinfiniteseries.xyz' },
-  { label: 'Know Thyself', url: 'https://minikinowthyself.ink' },
+  { label: 'Know Thyself', url: 'https://knowthyself101.xyz' },
   { label: 'Lambda Calculus', url: 'https://basiclambdacalculus.xyz' },
   { label: 'Machine Learning and Applied AI', url: 'https://machinelearning101.xyz' },
   { label: 'Machine Learning Operations', url: 'https://mlops.ink' },

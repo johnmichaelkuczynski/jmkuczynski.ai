@@ -61,6 +61,10 @@ export default defineConfig({
           'https://ethics101.xyz',
           'https://ethics101.ink',
         );
+        transformed = transformed.replaceAll(
+          'https://minikinowthyself.ink',
+          'https://knowthyself101.xyz',
+        );
         transformed = transformed.replace(
           '51 AI-powered interactive courses and 39 AI applications',
           '55 AI-powered interactive courses and 41 AI applications',
