@@ -65,6 +65,10 @@ export default defineConfig({
           'https://minikinowthyself.ink',
           'https://knowthyself101.xyz',
         );
+        transformed = transformed.replaceAll(
+          'https://ezpodcast.xyz',
+          'https://ezpodcast.ink',
+        );
         transformed = transformed.replace(
           '51 AI-powered interactive courses and 39 AI applications',
           '55 AI-powered interactive courses and 42 AI applications',
