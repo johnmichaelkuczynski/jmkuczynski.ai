@@ -90,7 +90,6 @@ const KEY_APPS: ColumnItem[] = [
   { label: 'College AI Match', url: 'https://collegeaimatch.xyz' },
   { label: 'EZ Homework', url: 'https://ezhw.ink' },
   { label: 'EZGrader', url: 'https://ezgrader.ai' },
-  { label: 'Judge Evaluator', url: 'https://judge101.ink' },
   { label: 'Texas Bar Prep', url: 'https://texasbarprep.ink' },
   { label: 'Genius 101', url: 'https://genius101.xyz' },
   { label: 'Freud GPT', url: 'https://freudgpt.me' },

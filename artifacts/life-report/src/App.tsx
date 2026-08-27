@@ -25,7 +25,7 @@ const queryClient = new QueryClient({
 
 const SITE_URL = 'https://jmkuczynski.ai';
 const HOME_TITLE = 'AI Courses & Apps — John-Michael Kuczynski PhD';
-const HOME_DESCRIPTION = 'Explore 55 AI-powered courses and 42 AI applications by John-Michael Kuczynski PhD in logic, philosophy, math, psychology, analytics, writing, and education.';
+const HOME_DESCRIPTION = 'Explore 55 AI-powered courses and 41 AI applications by John-Michael Kuczynski PhD in logic, philosophy, math, psychology, analytics, writing, and education.';
 
 function setMetaContent(attribute: 'name' | 'property', key: string, content: string) {
   let element = document.head.querySelector<HTMLMetaElement>(`meta[${attribute}="${key}"]`);

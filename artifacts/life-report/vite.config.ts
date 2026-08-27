@@ -71,7 +71,11 @@ export default defineConfig({
         );
         transformed = transformed.replace(
           '51 AI-powered interactive courses and 39 AI applications',
-          '55 AI-powered interactive courses and 42 AI applications',
+          '55 AI-powered interactive courses and 41 AI applications',
+        );
+        transformed = transformed.replace(
+          ' · <a href="https://judge101.ink">Judge Evaluator</a>',
+          '',
         );
 
         transformed = transformed.replace(
@@ -143,6 +147,14 @@ export default defineConfig({
               }
 
               if (appList && Array.isArray(appList.itemListElement)) {
+                appList.itemListElement = appList.itemListElement.filter(
+                  (entry) =>
+                    entry?.item?.name !== 'Judge Evaluator' &&
+                    entry?.item?.url !== 'https://judge101.ink',
+                );
+                appList.itemListElement.forEach((entry, index) => {
+                  entry.position = index + 1;
+                });
                 const existingUrls = new Set(
                   appList.itemListElement.map((entry) => entry?.item?.url),
                 );
