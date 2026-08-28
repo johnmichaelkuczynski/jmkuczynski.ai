@@ -73,6 +73,7 @@ const AI_COURSES: ColumnItem[] = [
 
 const KEY_APPS: ColumnItem[] = [
   { label: 'Living Book Creator', url: 'https://livingbookcreator.xyz' },
+  { label: 'Living Book Maker', url: 'https://livingbookmaker.ink' },
   { label: 'Book Builder', url: 'https://bookbuilder.ink' },
   { label: 'Black Jesus', url: 'https://blackjesus.ink' },
   { label: 'Metaethics', url: 'https://metaethics.ink' },

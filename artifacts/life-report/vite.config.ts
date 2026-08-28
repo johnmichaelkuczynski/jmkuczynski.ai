@@ -71,7 +71,7 @@ export default defineConfig({
         );
         transformed = transformed.replace(
           '51 AI-powered interactive courses and 39 AI applications',
-          '55 AI-powered interactive courses and 41 AI applications',
+          '55 AI-powered interactive courses and 42 AI applications',
         );
         transformed = transformed.replace(
           ' · <a href="https://judge101.ink">Judge Evaluator</a>',
@@ -171,6 +171,10 @@ export default defineConfig({
                     name: 'Metaethics',
                     url: 'https://metaethics.ink',
                   },
+                  {
+                    name: 'Living Book Maker',
+                    url: 'https://livingbookmaker.ink',
+                  },
                 ].forEach(({ name, url }) => {
                   if (existingUrls.has(url)) return;
                   appList.itemListElement.push({
@@ -199,7 +203,7 @@ export default defineConfig({
         );
         transformed = transformed.replace(
           '</p></main></noscript>',
-          ' · <a href="https://cognitivecareer.xyz">Cognitive Career Profiler</a> · <a href="https://blackjesus.ink">Black Jesus</a> · <a href="https://metaethics.ink">Metaethics</a></p></main></noscript>',
+          ' · <a href="https://cognitivecareer.xyz">Cognitive Career Profiler</a> · <a href="https://blackjesus.ink">Black Jesus</a> · <a href="https://metaethics.ink">Metaethics</a> · <a href="https://livingbookmaker.ink">Living Book Maker</a></p></main></noscript>',
         );
 
         return transformed;
