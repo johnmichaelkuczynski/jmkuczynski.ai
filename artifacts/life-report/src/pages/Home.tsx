@@ -99,7 +99,7 @@ const KEY_APPS: ColumnItem[] = [
   { label: 'Mind Profiler', url: 'https://mindprofiler.ink' },
   { label: 'Mind Probe', url: 'https://mindprobe.ink' },
   { label: 'Smart Goal Tracker', url: 'https://smartgoaltracker.xyz' },
-  { label: 'Psychology Pro', url: 'https://psychologypro.xyz' },
+  { label: 'Psychology Pro', url: 'https://psychologypro.ink' },
   { label: 'Model Transformer', url: 'https://modeltransformer.ink' },
   { label: 'LLM Plus', url: 'https://llmplus.ink' },
   { label: 'FrameWise', url: 'https://framewise.ink' },

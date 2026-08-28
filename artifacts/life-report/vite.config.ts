@@ -69,6 +69,10 @@ export default defineConfig({
           'https://ezpodcast.xyz',
           'https://ezpodcast.ink',
         );
+        transformed = transformed.replaceAll(
+          'https://psychologypro.xyz',
+          'https://psychologypro.ink',
+        );
         transformed = transformed.replace(
           '51 AI-powered interactive courses and 39 AI applications',
           '55 AI-powered interactive courses and 41 AI applications',
