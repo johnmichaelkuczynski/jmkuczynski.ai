@@ -162,9 +162,6 @@ export default defineConfig({
                     entry?.item?.name !== 'Chess Tutor' &&
                     entry?.item?.url !== 'https://chesstutor.xyz',
                 );
-                appList.itemListElement.forEach((entry, index) => {
-                  entry.position = index + 1;
-                });
                 const existingUrls = new Set(
                   appList.itemListElement.map((entry) => entry?.item?.url),
                 );
@@ -196,6 +193,22 @@ export default defineConfig({
                       url,
                     },
                   });
+                });
+                appList.itemListElement.sort((left, right) => {
+                  const leftName = String(left?.item?.name ?? '').replace(
+                    /[^a-z0-9]/gi,
+                    '',
+                  );
+                  const rightName = String(right?.item?.name ?? '').replace(
+                    /[^a-z0-9]/gi,
+                    '',
+                  );
+                  return leftName.localeCompare(rightName, 'en', {
+                    sensitivity: 'base',
+                  });
+                });
+                appList.itemListElement.forEach((entry, index) => {
+                  entry.position = index + 1;
                 });
                 appList.numberOfItems = appList.itemListElement.length;
               }
