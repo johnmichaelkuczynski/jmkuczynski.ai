@@ -103,6 +103,7 @@ const KEY_APPS: ColumnItem[] = [
   { label: 'Multiple Video Viewer', url: 'https://multivideo.ink' },
   { label: 'NeuroText', url: 'https://neurotext.ink' },
   { label: 'OCR Pro', url: 'https://ocrman.shop' },
+  { label: 'Original EZ Reader', url: 'https://originalezreader.ink' },
   { label: 'Originality Meter', url: 'https://originality.ink' },
   { label: 'Photo Psychoanalysis', url: 'https://photopsychoanalysis.ink' },
   { label: 'Podcast Creator', url: 'https://ezpodcast.ink' },
