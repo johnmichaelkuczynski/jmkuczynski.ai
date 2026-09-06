@@ -1,0 +1,29 @@
+kind = "video"
+videoAspectRatio = "9:16"
+previewPath = "/zhi-dr-k-tiktok/"
+title = "Meet Dr. K — Zhi Systems"
+description = "A short vertical TikTok promotional video introducing Dr. John-Michael Kuczynski as Zhi Systems' Senior Product Engineer and highlighting five of his technology products."
+version = "1.0.0"
+id = "artifacts/zhi-dr-k-tiktok"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/zhi-dr-k-tiktok/" ]
+localPort = 18757
+
+[services.development]
+run = "pnpm --filter @workspace/zhi-dr-k-tiktok run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/zhi-dr-k-tiktok", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/zhi-dr-k-tiktok/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "18757"
+BASE_PATH = "/zhi-dr-k-tiktok/"

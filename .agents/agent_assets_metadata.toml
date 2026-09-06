@@ -1,0 +1,9 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "0kg3h7So31x18jifNYZjA"
+uri = "file://artifacts/zhi-dr-k-tiktok/public/audio/bg_music.mp3"
+type = "audio"
+title = "background music"
+description = "Generated music: Driving electronic instrumental background music scoring a short editorial technology team introduction. Tight analog synth pulse, restrained modern percussion, subtle cinematic bass…"
