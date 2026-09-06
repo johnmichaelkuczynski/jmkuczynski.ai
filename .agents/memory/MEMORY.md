@@ -1,2 +1,3 @@
 - [Dialogue window & channel proxy quirks](dialogue-window-quirks.md) — draggable headers must skip buttons; API errors live at err.data; channel proxy self-rate-limits to protect the shared key.
 - [Login-free access](login-free-access.md) — all capabilities are intentionally public until a new login system is explicitly requested.
+- [Promotional video direction](promotional-video-direction.md) — imagery-led vertical motion graphics with grouped product cards were explicitly approved.
