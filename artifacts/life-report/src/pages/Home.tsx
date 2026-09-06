@@ -15,6 +15,7 @@ const PROFESSIONAL_LINKS = [
 interface ColumnItem { label: string; url?: string }
 
 const AI_COURSES: ColumnItem[] = [
+  { label: 'Aging with BPD', url: 'https://agingbpd.xyz' },
   { label: 'AI 101', url: 'https://ai101.ink' },
   { label: 'AI Integration Ethical AI & Governance Technology', url: 'https://aigovernance.ink' },
   { label: 'AI Logic', url: 'https://ailogiccourse.xyz' },

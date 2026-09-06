@@ -75,7 +75,7 @@ export default defineConfig({
         );
         transformed = transformed.replace(
           '51 AI-powered interactive courses and 39 AI applications',
-          '58 AI-powered interactive courses and 42 AI applications',
+          '59 AI-powered interactive courses and 42 AI applications',
         );
         transformed = transformed.replace(
           ' · <a href="https://judge101.ink">Judge Evaluator</a>',
@@ -115,6 +115,10 @@ export default defineConfig({
 
               if (courseList && Array.isArray(courseList.itemListElement)) {
                 const additions = [
+                  {
+                    name: 'Aging with BPD',
+                    url: 'https://agingbpd.xyz',
+                  },
                   {
                     name: 'AI Integration Ethical AI & Governance Technology',
                     url: 'https://aigovernance.ink',
@@ -238,7 +242,7 @@ export default defineConfig({
 
         transformed = transformed.replace(
           '</p><h2>Key Apps</h2>',
-          ' · <a href="https://aigovernance.ink">AI Integration Ethical AI &amp; Governance Technology</a> · <a href="https://generativeai.ink">Prompt Engineering for AI Generative</a> · <a href="https://mlops.ink">Machine Learning Operations</a> · <a href="https://picocryptography.xyz">Cryptography</a> · <a href="https://onedayepistemology.xyz">Four Hour Epistemology</a> · <a href="https://nanofreud.xyz">Freud in Four Hours</a></p><h2>Key Apps</h2>',
+          ' · <a href="https://agingbpd.xyz">Aging with BPD</a> · <a href="https://aigovernance.ink">AI Integration Ethical AI &amp; Governance Technology</a> · <a href="https://generativeai.ink">Prompt Engineering for AI Generative</a> · <a href="https://mlops.ink">Machine Learning Operations</a> · <a href="https://picocryptography.xyz">Cryptography</a> · <a href="https://onedayepistemology.xyz">Four Hour Epistemology</a> · <a href="https://nanofreud.xyz">Freud in Four Hours</a></p><h2>Key Apps</h2>',
         );
         transformed = transformed.replace(
           '</p></main></noscript>',
