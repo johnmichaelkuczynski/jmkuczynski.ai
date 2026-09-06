@@ -5,6 +5,7 @@ import { useChannelKuczynski } from '@workspace/api-client-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useLocation } from 'wouter';
+import { trackEvent } from '@/lib/analytics';
 
 function MessageText({ content }: { content: string }) {
   const paragraphs = content.split(/\n+/).filter(p => p.trim() !== '');
@@ -92,6 +93,7 @@ export function DialogueWindow() {
       const text = (data?.text || '').trim();
       if (text) {
         setInput((prev) => (prev.trim() ? `${prev.trim()} ${text}` : text));
+        trackEvent('voice_transcription_completed');
       } else {
         setError('No speech detected. Please try again.');
       }
@@ -138,6 +140,7 @@ export function DialogueWindow() {
       setError(null);
       setListening(true);
       rec.start();
+      trackEvent('voice_question_started');
     } catch {
       setError('Microphone access was denied. Please allow microphone access and try again.');
       setListening(false);
@@ -156,6 +159,9 @@ export function DialogueWindow() {
     a.download = `dialogue-with-dr-k-${new Date().toISOString().slice(0, 10)}.txt`;
     a.click();
     URL.revokeObjectURL(url);
+    trackEvent('dialogue_transcript_downloaded', {
+      message_count: history.length,
+    });
   };
 
   const windowRef = useRef<HTMLDivElement>(null);
@@ -325,6 +331,12 @@ export function DialogueWindow() {
     }, {
       onSuccess: (res) => {
         setHistory(prev => [...prev, { role: 'assistant', content: res.reply }]);
+        trackEvent('ask_dr_k_response_received', {
+          requested_length: length,
+          bullet_points: bullets,
+          voice_reply: speakReplies,
+          response_characters: res.reply.length,
+        });
         if (speakReplies) speak(res.reply);
       },
       onError: (err: any) => {

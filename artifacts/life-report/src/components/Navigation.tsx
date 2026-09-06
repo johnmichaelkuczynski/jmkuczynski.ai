@@ -3,11 +3,16 @@ import { Link, useLocation } from 'wouter';
 import { BookOpen, Calendar, Settings, Archive, MessageSquare, Mail, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useDialogue } from '@/contexts/DialogueContext';
+import { trackEvent } from '@/lib/analytics';
 
 export function Navigation({ children }: { children: ReactNode }) {
   const [location] = useLocation();
   const { openDialogue } = useDialogue();
   const [visitorCount, setVisitorCount] = useState<number | null>(null);
+  const openAskDrK = (surface: 'desktop' | 'mobile') => {
+    trackEvent('ask_dr_k_opened', { surface });
+    openDialogue();
+  };
 
   // Record this visit once per page load, then refresh the public count.
   useEffect(() => {
@@ -43,6 +48,7 @@ export function Navigation({ children }: { children: ReactNode }) {
           </div>
           <a
             href="mailto:jmkuczynski@yahoo.com"
+            onClick={() => trackEvent('contact_clicked', { surface: 'desktop' })}
             className="mt-4 flex items-center justify-center gap-2 px-4 py-2 text-xs font-mono uppercase tracking-widest font-bold text-primary-foreground bg-primary hover:bg-primary/90 transition-colors"
           >
             <Mail className="w-3.5 h-3.5" />
@@ -97,10 +103,15 @@ export function Navigation({ children }: { children: ReactNode }) {
               {visitorCount.toLocaleString()}
             </span>
           )}
-          <a href="mailto:jmkuczynski@yahoo.com" className="p-2 bg-primary text-primary-foreground flex items-center justify-center" aria-label="Contact Me">
+          <a
+            href="mailto:jmkuczynski@yahoo.com"
+            onClick={() => trackEvent('contact_clicked', { surface: 'mobile' })}
+            className="p-2 bg-primary text-primary-foreground flex items-center justify-center"
+            aria-label="Contact Me"
+          >
             <Mail className="w-4 h-4" />
           </a>
-          <button onClick={openDialogue} className="p-2 bg-primary/10 text-primary border border-primary/20 flex items-center justify-center cursor-pointer">
+          <button onClick={() => openAskDrK('mobile')} className="p-2 bg-primary/10 text-primary border border-primary/20 flex items-center justify-center cursor-pointer">
             <MessageSquare className="w-4 h-4" />
           </button>
         </div>
@@ -132,7 +143,7 @@ export function Navigation({ children }: { children: ReactNode }) {
 
       {/* Ask Dr. K — fixed top right (desktop) */}
       <button
-        onClick={openDialogue}
+        onClick={() => openAskDrK('desktop')}
         className="hidden md:flex fixed top-6 right-6 z-50 items-center gap-2 px-5 py-3 bg-primary text-primary-foreground font-mono text-xs uppercase tracking-widest font-bold shadow-lg hover:bg-primary/90 transition-colors cursor-pointer"
       >
         <MessageSquare className="w-4 h-4" />

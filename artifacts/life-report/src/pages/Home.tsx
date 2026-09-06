@@ -2,6 +2,7 @@ import { useGetProfile } from '@workspace/api-client-react';
 import { ExternalLink } from 'lucide-react';
 import { GatedLink } from '@/components/GatedLink';
 import { Skeleton } from '@/components/ui/skeleton';
+import { trackEvent } from '@/lib/analytics';
 
 const PROFESSIONAL_LINKS = [
   { label: 'Google Scholar', url: 'https://scholar.google.com/scholar?hl=en&as_sdt=0%2C34&q=JOHN-MICHAEL+KUCZYNSKI&btnG=' },
@@ -119,6 +120,8 @@ const KEY_APPS: ColumnItem[] = [
 ];
 
 function Column({ title, items }: { title: string; items: ColumnItem[] }) {
+  const contentType = title === 'AI Courses' ? 'course' : 'app';
+
   return (
     <div className="p-6 md:p-8">
       <h2 className="font-mono text-xs uppercase tracking-widest text-primary font-bold border-b-2 border-primary/30 pb-3 mb-4">
@@ -134,6 +137,12 @@ function Column({ title, items }: { title: string; items: ColumnItem[] }) {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-foreground hover:text-primary hover:underline underline-offset-2 transition-colors"
+                  onClick={() =>
+                    trackEvent('directory_link_clicked', {
+                      content_type: contentType,
+                      item_name: item.label,
+                    })
+                  }
                 >
                   {item.label}
                 </GatedLink>
@@ -198,6 +207,11 @@ export function Home() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-foreground hover:text-primary transition-colors underline-offset-4 hover:underline"
+                onClick={() =>
+                  trackEvent('profile_link_clicked', {
+                    profile: lnk.label,
+                  })
+                }
               >
                 <ExternalLink className="w-3.5 h-3.5 text-primary" />
                 {lnk.label}
