@@ -44,6 +44,7 @@ const AI_COURSES: ColumnItem[] = [
   { label: 'Financial & Managerial Analytics', url: 'https://babyfinancialanalytics.xyz' },
   { label: 'Finite Math', url: 'https://babyfinitemath.xyz' },
   { label: 'Formal Logic', url: 'https://formallogic.xyz' },
+  { label: 'Four Hour Epistemology', url: 'https://onedayepistemology.xyz' },
   { label: 'Freud in Four Hours', url: 'https://nanofreud.xyz' },
   { label: 'IQ Booster', url: 'https://iqbooster.xyz' },
   { label: 'Infinite Series', url: 'https://babyinfiniteseries.xyz' },
