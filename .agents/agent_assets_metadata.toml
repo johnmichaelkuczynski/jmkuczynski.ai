@@ -7,3 +7,10 @@ uri = "file://artifacts/zhi-dr-k-tiktok/public/audio/bg_music.mp3"
 type = "audio"
 title = "background music"
 description = "Generated music: Driving electronic instrumental background music scoring a short editorial technology team introduction. Tight analog synth pulse, restrained modern percussion, subtle cinematic bass…"
+
+[[outputs]]
+id = "pMU05p39VTXp5_cwrBIrq"
+uri = "file://artifacts/zhi-dr-k-tiktok/public/audio/voiceover.mp3"
+type = "audio"
+title = "natural promotional voiceover"
+description = "Text-to-speech audio: Introducing Dr. John-Michael Kuczynski, PhD, Senior Product Engineer at Zhi Systems. A former professor of philosophy and mathematics, Dr. Kuczynski is the author of two hundred…"

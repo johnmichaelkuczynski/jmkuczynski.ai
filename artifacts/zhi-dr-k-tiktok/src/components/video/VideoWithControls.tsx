@@ -331,11 +331,6 @@ export default function VideoWithControls() {
     <div className="relative h-screen w-full">
       <VideoTemplate
         key={mountKey}
-        durations={durations}
-        loop
-        paused={paused}
-        muted={muted}
-        onSceneChange={onSceneChange}
       />
       <div
         ref={sensorRef}

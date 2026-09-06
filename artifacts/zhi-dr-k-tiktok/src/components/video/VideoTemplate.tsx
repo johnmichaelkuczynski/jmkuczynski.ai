@@ -11,21 +11,27 @@ import Scene1 from './video_scenes/Scene1';
 import Scene2 from './video_scenes/Scene2';
 import Scene3 from './video_scenes/Scene3';
 import Scene4 from './video_scenes/Scene4';
+import Scene5 from './video_scenes/Scene5';
+import Scene6 from './video_scenes/Scene6';
 
 export const SCENE_DURATIONS = {
-  scene1: 4000,
-  scene2: 4500,
-  scene3: 4500,
-  scene4: 3000,
-};
+  intro: 9500,
+  professor: 7000,
+  stats: 9000,
+  products: 16000,
+  depth: 10000,
+  outro: 7000,
+}; // Total: 58500ms
 
 const VIDEO_ASPECT_RATIO: VideoAspectRatio = '9:16';
 
 const SCENE_COMPONENTS: Record<string, ComponentType> = {
-  scene1: Scene1,
-  scene2: Scene2,
-  scene3: Scene3,
-  scene4: Scene4,
+  intro: Scene1,
+  professor: Scene2,
+  stats: Scene3,
+  products: Scene4,
+  depth: Scene5,
+  outro: Scene6,
 };
 
 const SCENE_START_SEC: Record<string, number> = (() => {
@@ -70,7 +76,7 @@ export default function VideoTemplate({
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
-    audio.volume = 0.45;
+    audio.volume = 1;
     if (paused) {
       audio.pause();
       return;
@@ -92,13 +98,11 @@ export default function VideoTemplate({
         style={{ backgroundColor: '#0B0C10' }}
       >
         <AnimatePresence mode="popLayout">
-          {SceneComponent && (
-            <SceneComponent key={currentSceneKey} />
-          )}
+          {SceneComponent && <SceneComponent key={currentSceneKey} />}
         </AnimatePresence>
         <audio
           ref={audioRef}
-          src={`${import.meta.env.BASE_URL}audio/bg_music.mp3`}
+          src={`${import.meta.env.BASE_URL}audio/voiceover.mp3`}
           preload="auto"
           autoPlay
           muted={muted}
