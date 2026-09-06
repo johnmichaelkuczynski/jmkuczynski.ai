@@ -75,7 +75,7 @@ export default defineConfig({
         );
         transformed = transformed.replace(
           '51 AI-powered interactive courses and 39 AI applications',
-          '55 AI-powered interactive courses and 42 AI applications',
+          '57 AI-powered interactive courses and 42 AI applications',
         );
         transformed = transformed.replace(
           ' · <a href="https://judge101.ink">Judge Evaluator</a>',
@@ -130,6 +130,14 @@ export default defineConfig({
                   {
                     name: 'Cloud Architecture',
                     url: 'https://cloudarchitecture.ink',
+                  },
+                  {
+                    name: 'Cryptography',
+                    url: 'https://picocryptography.xyz',
+                  },
+                  {
+                    name: 'Freud in Four Hours',
+                    url: 'https://nanofreud.xyz',
                   },
                 ];
                 const existingUrls = new Set(
@@ -226,7 +234,7 @@ export default defineConfig({
 
         transformed = transformed.replace(
           '</p><h2>Key Apps</h2>',
-          ' · <a href="https://aigovernance.ink">AI Integration Ethical AI &amp; Governance Technology</a> · <a href="https://generativeai.ink">Prompt Engineering for AI Generative</a> · <a href="https://mlops.ink">Machine Learning Operations</a></p><h2>Key Apps</h2>',
+          ' · <a href="https://aigovernance.ink">AI Integration Ethical AI &amp; Governance Technology</a> · <a href="https://generativeai.ink">Prompt Engineering for AI Generative</a> · <a href="https://mlops.ink">Machine Learning Operations</a> · <a href="https://picocryptography.xyz">Cryptography</a> · <a href="https://nanofreud.xyz">Freud in Four Hours</a></p><h2>Key Apps</h2>',
         );
         transformed = transformed.replace(
           '</p></main></noscript>',
