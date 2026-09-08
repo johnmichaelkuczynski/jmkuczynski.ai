@@ -31,12 +31,12 @@ function MessageText({ content }: { content: string }) {
 
 type LengthKey = 'super-concise' | 'concise' | 'normal' | 'elaborate' | 'detailed';
 
-const LENGTH_OPTIONS: { key: LengthKey; label: string; maxWords?: number }[] = [
-  { key: 'super-concise', label: 'Super Concise', maxWords: 50 },
-  { key: 'concise', label: 'Concise', maxWords: 150 },
-  { key: 'normal', label: 'Normal' },
-  { key: 'elaborate', label: 'Elaborate', maxWords: 600 },
-  { key: 'detailed', label: 'Detailed', maxWords: 1200 },
+const LENGTH_OPTIONS: { key: LengthKey; label: string; description: string }[] = [
+  { key: 'super-concise', label: 'Super Concise', description: '1–3 sentences' },
+  { key: 'concise', label: 'Concise', description: '4–7 sentences' },
+  { key: 'normal', label: 'Normal', description: '2 paragraphs' },
+  { key: 'elaborate', label: 'Elaborated', description: '5 paragraphs · about 40 sentences' },
+  { key: 'detailed', label: 'Super Detailed', description: '8 paragraphs' },
 ];
 
 export function DialogueWindow() {
@@ -317,16 +317,12 @@ export function DialogueWindow() {
     
     setHistory(prev => [...prev, { role: 'user', content: userMessage }]);
 
-    const maxWords = LENGTH_OPTIONS.find((o) => o.key === length)?.maxWords;
-    const outgoing = bullets
-      ? `${userMessage}\n\n(Please format your answer as bullet points.)`
-      : userMessage;
-
     channel.mutate({
       data: {
-        message: outgoing,
+        message: userMessage,
         history: history as any, // API expects role as ChannelMessageRole string literal
-        ...(maxWords ? { maxWords } : {}),
+        responseLength: length,
+        bullets,
       }
     }, {
       onSuccess: (res) => {
@@ -502,6 +498,9 @@ export function DialogueWindow() {
             ))}
           </select>
         </label>
+        <span className="text-[11px] text-muted-foreground">
+          {LENGTH_OPTIONS.find((o) => o.key === length)?.description}
+        </span>
         <button
           type="button"
           onClick={() => setBullets(!bullets)}

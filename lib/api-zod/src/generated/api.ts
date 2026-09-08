@@ -366,6 +366,8 @@ export const ChannelKuczynskiBody = zod.object({
   "role": zod.enum(['user', 'assistant']),
   "content": zod.string()
 })).optional(),
+  "responseLength": zod.enum(['super-concise', 'concise', 'normal', 'elaborate', 'detailed']).optional().describe('Answer structure: 1–3 sentences, 4–7 sentences, 2 paragraphs, 5 paragraphs (about 40 sentences), or 8 paragraphs.'),
+  "bullets": zod.boolean().optional().describe('Format sentence answers as bullets, or each requested paragraph as one bullet.'),
   "maxWords": zod.int().min(1).max(channelKuczynskiBodyMaxWordsMax).optional(),
   "quotes": zod.int().min(channelKuczynskiBodyQuotesMin).max(channelKuczynskiBodyQuotesMax).optional()
 })

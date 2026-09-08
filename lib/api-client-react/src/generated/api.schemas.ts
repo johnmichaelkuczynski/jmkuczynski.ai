@@ -57,10 +57,28 @@ export interface ChannelMessage {
   content: string;
 }
 
+/**
+ * Answer structure: 1–3 sentences, 4–7 sentences, 2 paragraphs, 5 paragraphs (about 40 sentences), or 8 paragraphs.
+ */
+export type ChannelRequestResponseLength = typeof ChannelRequestResponseLength[keyof typeof ChannelRequestResponseLength];
+
+
+export const ChannelRequestResponseLength = {
+  'super-concise': 'super-concise',
+  concise: 'concise',
+  normal: 'normal',
+  elaborate: 'elaborate',
+  detailed: 'detailed',
+} as const;
+
 export interface ChannelRequest {
   /** @minLength 1 */
   message: string;
   history?: ChannelMessage[];
+  /** Answer structure: 1–3 sentences, 4–7 sentences, 2 paragraphs, 5 paragraphs (about 40 sentences), or 8 paragraphs. */
+  responseLength?: ChannelRequestResponseLength;
+  /** Format sentence answers as bullets, or each requested paragraph as one bullet. */
+  bullets?: boolean;
   /**
      * @minimum 1
      * @maximum 5000

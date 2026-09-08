@@ -6,11 +6,16 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { ChannelMessage } from './channelMessage';
+import type { ChannelRequestResponseLength } from './channelRequestResponseLength';
 
 export interface ChannelRequest {
   /** @minLength 1 */
   message: string;
   history?: ChannelMessage[];
+  /** Answer structure: 1–3 sentences, 4–7 sentences, 2 paragraphs, 5 paragraphs (about 40 sentences), or 8 paragraphs. */
+  responseLength?: ChannelRequestResponseLength;
+  /** Format sentence answers as bullets, or each requested paragraph as one bullet. */
+  bullets?: boolean;
   /**
      * @minimum 1
      * @maximum 5000

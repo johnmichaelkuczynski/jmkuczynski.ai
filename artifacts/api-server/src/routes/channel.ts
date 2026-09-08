@@ -1,5 +1,6 @@
 import { Router, type IRouter } from "express";
 import { ChannelKuczynskiBody, ChannelKuczynskiResponse } from "@workspace/api-zod";
+import { LENGTH_RULES, lengthInstruction, measureReply, replyMatchesLength } from "../lib/response-length";
 
 const router: IRouter = Router();
 
@@ -77,24 +78,31 @@ router.post("/channel", async (req, res): Promise<void> => {
     return;
   }
 
-  const { message, history, maxWords, quotes } = parsed.data;
+  const { message, history, maxWords, quotes, responseLength, bullets } = parsed.data;
+  // Keep legacy callers working, but every request now has an explicit structure.
+  const length = responseLength ?? (
+    maxWords === 50 ? "super-concise" : maxWords === 150 ? "concise" :
+    maxWords === 600 ? "elaborate" : maxWords === 1200 ? "detailed" : "normal"
+  );
+  const instruction = lengthInstruction(length, bullets);
+  const requestAnswer = (prompt: string) => fetch(UPSTREAM_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      message: prompt,
+      ...(history && history.length ? { history } : {}),
+      maxWords: LENGTH_RULES[length].maxWords,
+      ...(quotes !== undefined ? { quotes } : {}),
+    }),
+    signal: AbortSignal.timeout(120_000),
+  });
 
   let upstream: Response;
   try {
-    upstream = await fetch(UPSTREAM_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        message,
-        ...(history && history.length ? { history } : {}),
-        ...(maxWords ? { maxWords } : {}),
-        ...(quotes !== undefined ? { quotes } : {}),
-      }),
-      signal: AbortSignal.timeout(120_000),
-    });
+    upstream = await requestAnswer(`${message}\n\n${instruction}`);
   } catch (err) {
     req.log.error({ err }, "Failed to reach Genius 101");
     res.status(502).json({ error: "Could not reach the Kuczynski bot. Please try again." });
@@ -137,13 +145,43 @@ router.post("/channel", async (req, res): Promise<void> => {
     return;
   }
 
-  const reply = extractReply(payload);
+  let reply = extractReply(payload);
   if (!reply) {
     req.log.error({ raw: raw.slice(0, 500) }, "Unrecognized Genius 101 response shape");
     res.status(502).json({ error: "Received an unrecognized response from the Kuczynski bot." });
     return;
   }
 
+  if (!replyMatchesLength(reply, length)) {
+    const counts = measureReply(reply);
+    req.log.info({ length, ...counts }, "Correcting answer length");
+    try {
+      // One repair at most, protecting the shared upstream quota. Do not truncate
+      // prose or fabricate padding to make a non-compliant answer appear valid.
+      const correction = await requestAnswer(
+        `${message}\n\n${instruction}\n\nYour previous draft had ${counts.sentences} sentences and ${counts.paragraphs} paragraphs and did not meet the requirement. Rewrite the answer to comply exactly, preserving its important ideas.\n\nPrevious draft:\n${reply}\n\n${instruction}`,
+      );
+      if (!correction.ok) {
+        res.status(correction.status === 429 ? 429 : 502).json({
+          error: "The bot could not finish the requested answer length. Please try again shortly.",
+        });
+        return;
+      }
+      const correctedRaw = await correction.text();
+      let correctedPayload: unknown;
+      try { correctedPayload = JSON.parse(correctedRaw); } catch { correctedPayload = correctedRaw; }
+      const correctedReply = extractReply(correctedPayload);
+      if (!correctedReply || !replyMatchesLength(correctedReply, length)) {
+        res.status(502).json({ error: "The bot did not meet your selected answer length. Please try again." });
+        return;
+      }
+      reply = correctedReply;
+    } catch (err) {
+      req.log.error({ err }, "Failed correcting answer length");
+      res.status(502).json({ error: "Could not complete the requested answer length. Please try again." });
+      return;
+    }
+  }
   res.json(ChannelKuczynskiResponse.parse({ reply }));
 });
 
