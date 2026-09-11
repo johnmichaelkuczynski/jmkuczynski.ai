@@ -38,6 +38,11 @@ export default defineConfig({
           'https://photopsychoanalysis.ink',
         );
         transformed = transformed.replaceAll(
+          'https://modelwiz.xyz',
+          'https://treatisepro.com',
+        );
+        transformed = transformed.replaceAll('Model Builder', 'Treatise Pro');
+        transformed = transformed.replaceAll(
           'https://iq101.ink',
           'https://intelmeter.ink',
         );

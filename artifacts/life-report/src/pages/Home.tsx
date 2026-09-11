@@ -103,7 +103,6 @@ const KEY_APPS: ColumnItem[] = [
   { label: 'Metaethics', url: 'https://metaethics.ink' },
   { label: 'Mind Probe', url: 'https://mindprobe.ink' },
   { label: 'Mind Profiler', url: 'https://mindprofiler.ink' },
-  { label: 'Model Builder', url: 'https://modelwiz.xyz' },
   { label: 'Model Transformer', url: 'https://modeltransformer.ink' },
   { label: 'Multiple Video Viewer', url: 'https://multivideo.ink' },
   { label: 'NeuroText', url: 'https://neurotext.ink' },
@@ -119,6 +118,7 @@ const KEY_APPS: ColumnItem[] = [
   { label: 'SOXL Options Pro', url: 'https://soxlpro.xyz' },
   { label: 'Texas Bar Prep', url: 'https://texasbarprep.ink' },
   { label: 'Text Surgeon Plus', url: 'https://textsurgeonplus.xyz' },
+  { label: 'Treatise Pro', url: 'https://treatisepro.com' },
 ];
 
 function Column({ title, items }: { title: string; items: ColumnItem[] }) {
