@@ -350,8 +350,15 @@ export const GetFeaturedResponse = zod.array(GetFeaturedResponseItem)
 
 
 /**
+ * Returns JSON by default. Send `Accept: application/x-ndjson` to stream
+ * newline-delimited status, delta, reset, done, and error events. A reset
+ * instructs clients to discard earlier deltas before applying corrective-generation deltas.
  * @summary Send a message to the Kuczynski bot (Genius 101) and get a reply
  */
+export const ChannelKuczynskiHeader = zod.object({
+  "Accept": zod.string().optional().describe('Use application\/x-ndjson to request a streaming response.')
+})
+
 export const channelKuczynskiBodyProviderDefault = `gemini`;
 export const channelKuczynskiBodyMaxWordsMax = 5000;
 

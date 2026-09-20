@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useDialogue } from '@/contexts/DialogueContext';
 import { X, ArrowLeft, Maximize2, Minimize2, GripHorizontal, Download, Mic, MicOff, Volume2, VolumeX, List, MessageSquare, RotateCcw } from 'lucide-react';
-import { useChannelKuczynski } from '@workspace/api-client-react';
+import { useStreamingChannel } from '@/hooks/use-streaming-channel';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useLocation } from 'wouter';
@@ -50,7 +50,7 @@ export function DialogueWindow() {
     history,
     setHistory,
   } = useDialogue();
-  const channel = useChannelKuczynski();
+  const channel = useStreamingChannel();
   const [, setLocation] = useLocation();
   
   const [input, setInput] = useState('');
@@ -216,7 +216,7 @@ export function DialogueWindow() {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [history, channel.isPending]);
+  }, [history, channel.isPending, channel.streamedReply]);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -330,7 +330,7 @@ export function DialogueWindow() {
     channel.mutate({
       data: {
         message: userMessage,
-        history: history as any, // API expects role as ChannelMessageRole string literal
+        history,
         responseLength: length,
         provider,
         bullets,
@@ -348,7 +348,7 @@ export function DialogueWindow() {
         if (speakReplies) speak(res.reply);
       },
       onError: (err: any) => {
-        const errorMsg = err?.data?.error || err?.error || 'An error occurred while consulting the archive.';
+        const errorMsg = err?.data?.error || err?.error || err?.message || 'An error occurred while consulting the archive.';
         setError(errorMsg);
         setHistory(prev => prev.slice(0, -1));
         setInput(userMessage);
@@ -460,7 +460,7 @@ export function DialogueWindow() {
           ))}
           
           {channel.isPending && (
-            <div className="flex flex-col mr-auto items-start w-full animate-in fade-in duration-1000">
+            <div className="flex flex-col mr-auto items-start w-full" aria-busy="true">
               <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest mb-2 px-1 flex items-center gap-2">
                 <img
                   src={`${import.meta.env.BASE_URL}avatar.png`}
@@ -469,11 +469,18 @@ export function DialogueWindow() {
                 />
                 Archive
               </span>
-              <div className="p-5 md:p-8 font-serif text-lg md:text-xl tracking-tight text-muted-foreground flex flex-col gap-4">
-                 <div className="flex items-center gap-3">
-                   <div className="w-2 h-2 bg-primary rounded-none animate-pulse"></div>
-                   <span className="italic">Synthesizing the corpus...</span>
-                 </div>
+              <div className="p-5 md:p-8 font-serif text-lg md:text-xl tracking-tight text-foreground w-full">
+                {channel.streamedReply ? (
+                  <>
+                    <MessageText content={channel.streamedReply} />
+                    <span aria-hidden="true" className="inline-block w-2 h-4 mt-2 bg-primary animate-pulse" />
+                  </>
+                ) : (
+                  <div role="status" className="flex items-center gap-3 text-muted-foreground">
+                    <div className="w-2 h-2 shrink-0 bg-primary animate-pulse" aria-hidden="true" />
+                    <span className="italic">{channel.streamStatus}</span>
+                  </div>
+                )}
               </div>
             </div>
           )}

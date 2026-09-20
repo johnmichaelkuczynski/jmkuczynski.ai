@@ -236,6 +236,21 @@ paths:
       operationId: channelKuczynski
       tags: [channel]
       summary: Send a message to the Kuczynski bot (Genius 101) and get a reply
+      description: |
+        Returns JSON by default. Send `Accept: application/x-ndjson` to stream
+        newline-delimited status, delta, reset, done, and error events. A reset
+        instructs clients to discard earlier deltas before applying corrective-generation deltas.
+      parameters:
+        - name: Accept
+          in: header
+          required: false
+          description: Use application/x-ndjson to request a streaming response.
+          schema:
+            type: string
+      x-ndjson-stream:
+        mediaType: application/x-ndjson
+        eventSchema:
+          $ref: "#/components/schemas/ChannelStreamEvent"
       requestBody:
         required: true
         content:
@@ -459,6 +474,46 @@ components:
       properties:
         reply:
           type: string
+    ChannelStreamEvent:
+      description: An individual JSON object carried on one NDJSON line.
+      oneOf:
+        - $ref: "#/components/schemas/ChannelStatusEvent"
+        - $ref: "#/components/schemas/ChannelDeltaEvent"
+        - $ref: "#/components/schemas/ChannelResetEvent"
+        - $ref: "#/components/schemas/ChannelDoneEvent"
+        - $ref: "#/components/schemas/ChannelErrorEvent"
+      discriminator:
+        propertyName: type
+    ChannelStatusEvent:
+      type: object
+      required: [type, message]
+      properties:
+        type: { type: string, const: status }
+        message: { type: string }
+    ChannelDeltaEvent:
+      type: object
+      required: [type, text]
+      properties:
+        type: { type: string, const: delta }
+        text: { type: string }
+    ChannelResetEvent:
+      type: object
+      required: [type, message]
+      properties:
+        type: { type: string, const: reset }
+        message: { type: string }
+    ChannelDoneEvent:
+      type: object
+      required: [type, reply]
+      properties:
+        type: { type: string, const: done }
+        reply: { type: string }
+    ChannelErrorEvent:
+      type: object
+      required: [type, error]
+      properties:
+        type: { type: string, const: error }
+        error: { type: string }
     ResourceLink:
       type: object
       required: [label, url]

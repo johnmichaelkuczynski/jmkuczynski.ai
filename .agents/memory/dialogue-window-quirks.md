@@ -19,3 +19,9 @@ Treat Gemini's model listing as discovery, not proof that a generation endpoint 
 **Why:** In this environment a listed model returned 404 for generation, and the latest alias returned 503, while another explicitly listed model generated successfully with the same key.
 
 **How to apply:** Before declaring an integration active, confirm a real generation through the application's route, not merely a successful model-list or credential-presence check.
+
+Streamed answers are provisional until successful upstream completion and answer-length validation; only the final validated answer belongs in history and downloads.
+
+**Why:** Live display must not bypass the existing length contract or silently preserve a truncated answer. A correction may replace the provisional draft.
+
+**How to apply:** Keep progressive display separate from committed conversation history; report interrupted streams explicitly, and retain the bounded correction policy.

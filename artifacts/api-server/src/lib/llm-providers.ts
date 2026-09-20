@@ -16,8 +16,10 @@ export async function requestProviderAnswer(
   history: Turn[],
   maxWords: number,
   quotes?: number,
+  options?: { stream?: boolean; signal?: AbortSignal },
 ): Promise<Response> {
-  const signal = AbortSignal.timeout(120_000);
+  const timeout = AbortSignal.timeout(120_000);
+  const signal = options?.signal ? AbortSignal.any([timeout, options.signal]) : timeout;
   if (provider === "dr-k") {
     return fetch("https://genius101.xyz/api/external/kuczynski", {
       method: "POST",
@@ -27,7 +29,7 @@ export async function requestProviderAnswer(
     });
   }
   const response = provider === "gemini"
-    ? await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent", {
+    ? await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:${options?.stream ? "streamGenerateContent?alt=sse" : "generateContent"}`, {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
       body: JSON.stringify({
@@ -47,6 +49,7 @@ export async function requestProviderAnswer(
         model: "sonar",
         messages: [{ role: "system", content: SYSTEM }, ...history, { role: "user", content: message }],
         max_tokens: 8192,
+        ...(options?.stream ? { stream: true } : {}),
       }),
       signal,
     });
@@ -59,6 +62,7 @@ export async function requestProviderAnswer(
         : `returned an error (HTTP ${response.status})`;
     return Response.json({ error: `${PROVIDERS[provider].label} ${reason}.` }, { status: response.status });
   }
+  if (options?.stream) return response;
   const data = await response.json() as {
     candidates?: { content?: { parts?: { thought?: boolean; text?: string }[] } }[];
     choices?: { message?: { content?: string } }[];
@@ -70,4 +74,100 @@ export async function requestProviderAnswer(
     return Response.json({ error: `${PROVIDERS[provider].label} returned no answer. The request may have been blocked.` }, { status: 502 });
   }
   return Response.json({ reply });
+}
+
+/**
+ * Parses an SSE byte stream without assuming that UTF-8 characters, lines, or
+ * events align with transport chunks. Only data fields are returned.
+ */
+export async function* parseSseData(
+  body: ReadableStream<Uint8Array>,
+): AsyncGenerator<string> {
+  const reader = body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  let dataLines: string[] = [];
+
+  const consumeLine = (line: string): string | undefined => {
+    if (line === "") {
+      if (dataLines.length === 0) return;
+      const data = dataLines.join("\n");
+      dataLines = [];
+      return data;
+    }
+    if (line.startsWith(":")) return;
+    if (line === "data") dataLines.push("");
+    else if (line.startsWith("data:")) dataLines.push(line.slice(5).replace(/^ /, ""));
+    return undefined;
+  };
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      buffer += done ? decoder.decode() : decoder.decode(value, { stream: true });
+      let newline: number;
+      while ((newline = buffer.indexOf("\n")) !== -1) {
+        let line = buffer.slice(0, newline);
+        buffer = buffer.slice(newline + 1);
+        if (line.endsWith("\r")) line = line.slice(0, -1);
+        const event = consumeLine(line);
+        if (event !== undefined) yield event;
+      }
+      if (done) break;
+    }
+    if (buffer.endsWith("\r")) buffer = buffer.slice(0, -1);
+    if (buffer) {
+      const event = consumeLine(buffer);
+      if (event !== undefined) yield event;
+    }
+    const finalEvent = consumeLine("");
+    if (finalEvent !== undefined) yield finalEvent;
+  } finally {
+    reader.releaseLock();
+  }
+}
+
+export type ProviderStreamEvent = {
+  text: string;
+  completed: boolean;
+  finishReason?: string;
+};
+
+export function parseProviderStreamEvent(
+  provider: Exclude<LlmProvider, "dr-k">,
+  data: string,
+): ProviderStreamEvent {
+  if (data === "[DONE]") return { text: "", completed: false };
+  let payload: {
+    candidates?: {
+      content?: { parts?: { thought?: boolean; text?: string }[] };
+      finishReason?: string;
+    }[];
+    choices?: { delta?: { content?: string }; finish_reason?: string | null }[];
+  };
+  try {
+    payload = JSON.parse(data) as typeof payload;
+  } catch {
+    throw new Error("Invalid streaming response");
+  }
+  if (provider === "gemini") {
+    const candidate = payload.candidates?.[0];
+    const finishReason = candidate?.finishReason;
+    const text = candidate?.content?.parts
+      ?.filter(part => !part.thought && typeof part.text === "string")
+      .map(part => part.text)
+      .join("") ?? "";
+    return { text, completed: finishReason === "STOP", ...(finishReason ? { finishReason } : {}) };
+  }
+  const choice = payload.choices?.[0];
+  const finishReason = choice?.finish_reason ?? undefined;
+  return {
+    text: choice?.delta?.content ?? "",
+    completed: finishReason === "stop",
+    ...(finishReason ? { finishReason } : {}),
+  };
+}
+
+export function extractProviderStreamDelta(provider: Exclude<LlmProvider, "dr-k">, data: string): string {
+  return parseProviderStreamEvent(provider, data).text;
 }

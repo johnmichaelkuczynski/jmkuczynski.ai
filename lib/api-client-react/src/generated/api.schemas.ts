@@ -105,6 +105,36 @@ export interface ChannelResponse {
   reply: string;
 }
 
+export interface ChannelStatusEvent {
+  type: 'status';
+  message: string;
+}
+
+export interface ChannelDeltaEvent {
+  type: 'delta';
+  text: string;
+}
+
+export interface ChannelResetEvent {
+  type: 'reset';
+  message: string;
+}
+
+export interface ChannelDoneEvent {
+  type: 'done';
+  reply: string;
+}
+
+export interface ChannelErrorEvent {
+  type: 'error';
+  error: string;
+}
+
+/**
+ * An individual JSON object carried on one NDJSON line.
+ */
+export type ChannelStreamEvent = ChannelStatusEvent | ChannelDeltaEvent | ChannelResetEvent | ChannelDoneEvent | ChannelErrorEvent;
+
 export interface ResourceLink {
   /** @minLength 1 */
   label: string;

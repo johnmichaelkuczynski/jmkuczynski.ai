@@ -968,6 +968,9 @@ export const getChannelKuczynskiUrl = () => {
 }
 
 /**
+ * Returns JSON by default. Send `Accept: application/x-ndjson` to stream
+ * newline-delimited status, delta, reset, done, and error events. A reset
+ * instructs clients to discard earlier deltas before applying corrective-generation deltas.
  * @summary Send a message to the Kuczynski bot (Genius 101) and get a reply
  */
 export const channelKuczynski = async (channelRequest: ChannelRequest, options?: Parameters<typeof customFetch>[1]): Promise<ChannelResponse> => {

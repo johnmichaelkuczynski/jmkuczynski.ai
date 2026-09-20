@@ -1,7 +1,13 @@
 import { Router, type IRouter } from "express";
 import { ChannelKuczynskiBody, ChannelKuczynskiResponse } from "@workspace/api-zod";
 import { LENGTH_RULES, lengthInstruction, measureReply, replyMatchesLength } from "../lib/response-length";
-import { PROVIDERS, requestProviderAnswer } from "../lib/llm-providers";
+import {
+  parseSseData,
+  parseProviderStreamEvent,
+  PROVIDERS,
+  requestProviderAnswer,
+  type LlmProvider,
+} from "../lib/llm-providers";
 
 const router: IRouter = Router();
 
@@ -42,20 +48,83 @@ function extractReply(payload: unknown): string | null {
   return null;
 }
 
+type StreamEvent =
+  | { type: "status"; message: string }
+  | { type: "delta"; text: string }
+  | { type: "reset"; message: string }
+  | { type: "done"; reply: string }
+  | { type: "error"; error: string };
+
+function wantsNdjson(req: { get(name: string): string | undefined }): boolean {
+  return req.get("accept")?.split(",").some(value =>
+    value.split(";")[0]?.trim().toLowerCase() === "application/x-ndjson"
+  ) ?? false;
+}
+
+async function readJsonProviderReply(response: Response): Promise<string | null> {
+  const raw = await response.text();
+  let payload: unknown = raw;
+  try { payload = JSON.parse(raw); } catch { /* retain plain text */ }
+  return extractReply(payload);
+}
+
+async function streamAnswer(
+  provider: LlmProvider,
+  response: Response,
+  emitDelta: (text: string) => void,
+): Promise<string> {
+  if (provider === "dr-k") {
+    const reply = await readJsonProviderReply(response);
+    if (!reply) throw new Error("Empty provider response");
+    emitDelta(reply);
+    return reply;
+  }
+  if (!response.body) throw new Error("Missing provider response stream");
+  let reply = "";
+  let completed = false;
+  let finishReason: string | undefined;
+  for await (const data of parseSseData(response.body)) {
+    const event = parseProviderStreamEvent(provider, data);
+    if (event.text) {
+      reply += event.text;
+      emitDelta(event.text);
+    }
+    if (event.finishReason) {
+      finishReason = event.finishReason;
+      completed = event.completed;
+    }
+  }
+  if (!reply.trim()) throw new Error("Empty provider response");
+  if (!completed) {
+    throw new Error(finishReason
+      ? `Provider stopped before successful completion (${finishReason})`
+      : "Provider stream ended without a completion marker");
+  }
+  return reply;
+}
+
 router.post("/channel", async (req, res): Promise<void> => {
+  const streaming = wantsNdjson(req);
+  const earlyError = (status: number, error: string): void => {
+    if (!streaming) {
+      res.status(status).json({ error });
+      return;
+    }
+    res.status(status).type("application/x-ndjson").send(`${JSON.stringify({ type: "error", error })}\n`);
+  };
   if (rateLimited(req.ip ?? "unknown")) {
-    res.status(429).json({ error: "Too many inquiries. Please wait a few minutes and try again." });
+    earlyError(429, "Too many inquiries. Please wait a few minutes and try again.");
     return;
   }
 
   const parsed = ChannelKuczynskiBody.safeParse(req.body);
   if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.message });
+    earlyError(400, parsed.error.message);
     return;
   }
 
   if (parsed.data.message.length > MAX_MESSAGE_CHARS) {
-    res.status(400).json({ error: `Message is too long (max ${MAX_MESSAGE_CHARS} characters).` });
+    earlyError(400, `Message is too long (max ${MAX_MESSAGE_CHARS} characters).`);
     return;
   }
   if (parsed.data.history) {
@@ -76,7 +145,7 @@ router.post("/channel", async (req, res): Promise<void> => {
   const providerLabel = PROVIDERS[provider].label;
   const apiKey = process.env[PROVIDERS[provider].secret];
   if (!apiKey) {
-    res.status(502).json({ error: `${providerLabel}'s API key is not configured.` });
+    earlyError(502, `${providerLabel}'s API key is not configured.`);
     return;
   }
 
@@ -90,6 +159,84 @@ router.post("/channel", async (req, res): Promise<void> => {
   const requestAnswer = (prompt: string) => requestProviderAnswer(
     provider, apiKey, prompt, history ?? [], LENGTH_RULES[length].maxWords, quotes,
   );
+
+  if (streaming) {
+    const controller = new AbortController();
+    let connected = true;
+    const emit = (event: StreamEvent): void => {
+      if (connected && !res.writableEnded) res.write(`${JSON.stringify(event)}\n`);
+    };
+    const onClose = (): void => {
+      if (!res.writableEnded) {
+        connected = false;
+        controller.abort();
+      }
+    };
+    res.on("close", onClose);
+    res.status(200);
+    res.set({
+      "Content-Type": "application/x-ndjson; charset=utf-8",
+      "Cache-Control": "no-cache, no-transform",
+      "X-Accel-Buffering": "no",
+    });
+    res.flushHeaders();
+    emit({ type: "status", message: `Asking ${providerLabel}…` });
+    const heartbeat = setInterval(() => emit({ type: "status", message: "Still working…" }), 15_000);
+
+    const streamRequest = (prompt: string) => requestProviderAnswer(
+      provider,
+      apiKey,
+      prompt,
+      history ?? [],
+      LENGTH_RULES[length].maxWords,
+      quotes,
+      { stream: true, signal: controller.signal },
+    );
+    const fail = (error: string): void => {
+      emit({ type: "error", error });
+      if (connected && !res.writableEnded) res.end();
+    };
+
+    try {
+      let upstream = await streamRequest(`${message}\n\n${instruction}`);
+      if (!upstream.ok) {
+        fail(upstream.status === 429
+          ? `${providerLabel} is rate-limited or has exhausted its quota. Try again later or select another provider.`
+          : `${providerLabel} is unavailable. Please try again.`);
+        return;
+      }
+      let reply = await streamAnswer(provider, upstream, text => emit({ type: "delta", text }));
+      if (!replyMatchesLength(reply, length)) {
+        const counts = measureReply(reply);
+        req.log.info({ length, ...counts }, "Correcting streamed answer length");
+        emit({ type: "reset", message: "Refining the answer to match your selected length…" });
+        upstream = await streamRequest(
+          `${message}\n\n${instruction}\n\nYour previous draft had ${counts.sentences} sentences and ${counts.paragraphs} paragraphs and did not meet the requirement. Rewrite the answer to comply exactly, preserving its important ideas.\n\nPrevious draft:\n${reply}\n\n${instruction}`,
+        );
+        if (!upstream.ok) {
+          fail("The bot could not finish the requested answer length. Please try again shortly.");
+          return;
+        }
+        reply = await streamAnswer(provider, upstream, text => emit({ type: "delta", text }));
+        if (!replyMatchesLength(reply, length)) {
+          fail("The bot did not meet your selected answer length. Please try again.");
+          return;
+        }
+      }
+      emit({ type: "done", reply });
+      if (connected && !res.writableEnded) res.end();
+    } catch (err) {
+      if (!controller.signal.aborted) {
+        req.log.error({ err, provider }, "Streaming provider request failed");
+        fail(`Could not complete ${providerLabel}'s answer. Please try again.`);
+      }
+    } finally {
+      clearInterval(heartbeat);
+      res.off("close", onClose);
+      controller.abort();
+    }
+    return;
+  }
 
   let upstream: Response;
   try {
