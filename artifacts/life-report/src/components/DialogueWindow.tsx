@@ -1,11 +1,12 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useDialogue } from '@/contexts/DialogueContext';
-import { X, ArrowLeft, Maximize2, Minimize2, GripHorizontal, Download, Mic, MicOff, Volume2, VolumeX, List, MessageSquare } from 'lucide-react';
+import { X, ArrowLeft, Maximize2, Minimize2, GripHorizontal, Download, Mic, MicOff, Volume2, VolumeX, List, MessageSquare, RotateCcw } from 'lucide-react';
 import { useChannelKuczynski } from '@workspace/api-client-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useLocation } from 'wouter';
 import { trackEvent } from '@/lib/analytics';
+import { formatConversationThread } from '@/lib/conversation-thread';
 
 function MessageText({ content }: { content: string }) {
   const paragraphs = content.split(/\n+/).filter(p => p.trim() !== '');
@@ -149,20 +150,28 @@ export function DialogueWindow() {
   };
 
   const downloadTranscript = () => {
-    const lines = history.map((m) =>
-      `${m.role === 'user' ? 'YOU' : 'DR. K'}:\n${m.content}\n`
-    );
-    const text = `DIALOGUE WITH DR. K — ${new Date().toLocaleString()}\n${'='.repeat(40)}\n\n${lines.join('\n')}`;
+    if (!history.length || channel.isPending) return;
+    const text = formatConversationThread(history);
     const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `dialogue-with-dr-k-${new Date().toISOString().slice(0, 10)}.txt`;
+    a.download = `ask-dr-k-thread-${new Date().toISOString().replace(/[:.]/g, '-')}.txt`;
+    document.body.appendChild(a);
     a.click();
-    URL.revokeObjectURL(url);
+    a.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
     trackEvent('dialogue_transcript_downloaded', {
       message_count: history.length,
     });
+  };
+
+  const clearConversation = () => {
+    if (channel.isPending || listening || transcribing) return;
+    if (!window.confirm('Clear this conversation and refresh the page? All messages and any unsent draft will be removed. Download the thread first if you want to keep it.')) return;
+    window.speechSynthesis?.cancel();
+    setHistory([]);
+    window.location.reload();
   };
 
   const windowRef = useRef<HTMLDivElement>(null);
@@ -385,15 +394,6 @@ export function DialogueWindow() {
           <span className="font-mono text-xs uppercase tracking-widest font-bold text-primary">Channel: Kuczynski</span>
         </div>
         <div className="flex items-center gap-2">
-          {history.length > 0 && (
-            <button
-              onClick={downloadTranscript}
-              title="Download exchange as TXT"
-              className="p-1 hover:bg-secondary-foreground/10 transition-colors"
-            >
-              <Download className="w-4 h-4" />
-            </button>
-          )}
           <button
             onClick={() => {
               if (speakReplies) window.speechSynthesis?.cancel();
@@ -486,6 +486,29 @@ export function DialogueWindow() {
           <button onClick={() => setError(null)}><X className="w-4 h-4"/></button>
         </div>
       )}
+
+      <div className="px-4 py-2 border-t border-border bg-card flex flex-wrap items-center gap-3">
+        <button
+          type="button"
+          onClick={downloadTranscript}
+          disabled={!history.length || channel.isPending}
+          title="Download the complete question-and-answer thread as a text file"
+          className="flex items-center gap-2 px-2 py-1 text-xs font-mono text-primary border border-primary/30 hover:bg-primary/10 disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          <Download className="w-4 h-4" />
+          Download thread
+        </button>
+        <button
+          type="button"
+          onClick={clearConversation}
+          disabled={channel.isPending || listening || transcribing}
+          title="Remove all messages and refresh the page"
+          className="flex items-center gap-2 px-2 py-1 text-xs font-mono text-muted-foreground border border-border hover:text-primary hover:border-primary/30 disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          <RotateCcw className="w-4 h-4" />
+          Clear conversation
+        </button>
+      </div>
 
       {/* Response preferences */}
       <div className="px-4 py-2 border-t border-border bg-card flex flex-wrap items-center gap-x-4 gap-y-2">
