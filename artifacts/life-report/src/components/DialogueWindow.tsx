@@ -57,7 +57,7 @@ export function DialogueWindow() {
   const [error, setError] = useState<string | null>(null);
 
   // Response preferences
-  const [length, setLength] = useState<LengthKey>('normal');
+  const [length, setLength] = useState<LengthKey>('concise');
   const [provider, setProvider] = useState<'gemini' | 'perplexity' | 'dr-k'>('gemini');
   const [bullets, setBullets] = useState(false);
   const [speakReplies, setSpeakReplies] = useState(false);
