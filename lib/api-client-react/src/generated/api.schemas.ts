@@ -57,6 +57,15 @@ export interface ChannelMessage {
   content: string;
 }
 
+export type ChannelRequestProvider = typeof ChannelRequestProvider[keyof typeof ChannelRequestProvider];
+
+
+export const ChannelRequestProvider = {
+  gemini: 'gemini',
+  perplexity: 'perplexity',
+  'dr-k': 'dr-k',
+} as const;
+
 /**
  * Answer structure: 1–3 sentences, 4–7 sentences, 2 paragraphs, 5 paragraphs (about 40 sentences), or 8 paragraphs.
  */
@@ -72,6 +81,7 @@ export const ChannelRequestResponseLength = {
 } as const;
 
 export interface ChannelRequest {
+  provider?: ChannelRequestProvider;
   /** @minLength 1 */
   message: string;
   history?: ChannelMessage[];

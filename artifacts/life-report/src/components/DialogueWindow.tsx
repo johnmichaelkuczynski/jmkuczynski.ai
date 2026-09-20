@@ -58,6 +58,7 @@ export function DialogueWindow() {
 
   // Response preferences
   const [length, setLength] = useState<LengthKey>('normal');
+  const [provider, setProvider] = useState<'gemini' | 'perplexity' | 'dr-k'>('gemini');
   const [bullets, setBullets] = useState(false);
   const [speakReplies, setSpeakReplies] = useState(false);
   const [listening, setListening] = useState(false);
@@ -322,6 +323,7 @@ export function DialogueWindow() {
         message: userMessage,
         history: history as any, // API expects role as ChannelMessageRole string literal
         responseLength: length,
+        provider,
         bullets,
       }
     }, {
@@ -329,6 +331,7 @@ export function DialogueWindow() {
         setHistory(prev => [...prev, { role: 'assistant', content: res.reply }]);
         trackEvent('ask_dr_k_response_received', {
           requested_length: length,
+          provider,
           bullet_points: bullets,
           voice_reply: speakReplies,
           response_characters: res.reply.length,
@@ -486,6 +489,19 @@ export function DialogueWindow() {
 
       {/* Response preferences */}
       <div className="px-4 py-2 border-t border-border bg-card flex flex-wrap items-center gap-x-4 gap-y-2">
+        <label className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+          AI
+          <select
+            value={provider}
+            disabled={channel.isPending}
+            onChange={(e) => setProvider(e.target.value as typeof provider)}
+            className="bg-background border border-border px-2 py-1 text-[11px] font-mono uppercase tracking-wider text-foreground focus:outline-none focus:border-primary"
+          >
+            <option value="gemini">Gemini</option>
+            <option value="perplexity">Perplexity</option>
+            <option value="dr-k">Dr. K Original</option>
+          </select>
+        </label>
         <label className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
           Length
           <select

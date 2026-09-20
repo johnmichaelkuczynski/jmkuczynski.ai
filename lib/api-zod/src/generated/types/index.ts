@@ -15,6 +15,7 @@ export * from './categoryCount';
 export * from './channelMessage';
 export * from './channelMessageRole';
 export * from './channelRequest';
+export * from './channelRequestProvider';
 export * from './channelRequestResponseLength';
 export * from './channelResponse';
 export * from './healthStatus';

@@ -352,7 +352,7 @@ export const GetFeaturedResponse = zod.array(GetFeaturedResponseItem)
 /**
  * @summary Send a message to the Kuczynski bot (Genius 101) and get a reply
  */
-
+export const channelKuczynskiBodyProviderDefault = `gemini`;
 export const channelKuczynskiBodyMaxWordsMax = 5000;
 
 export const channelKuczynskiBodyQuotesMin = 0;
@@ -361,6 +361,7 @@ export const channelKuczynskiBodyQuotesMax = 20;
 
 
 export const ChannelKuczynskiBody = zod.object({
+  "provider": zod.enum(['gemini', 'perplexity', 'dr-k']).default(channelKuczynskiBodyProviderDefault),
   "message": zod.string().min(1),
   "history": zod.array(zod.object({
   "role": zod.enum(['user', 'assistant']),

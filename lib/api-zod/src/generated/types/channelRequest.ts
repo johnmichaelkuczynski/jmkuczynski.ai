@@ -6,9 +6,11 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { ChannelMessage } from './channelMessage';
+import type { ChannelRequestProvider } from './channelRequestProvider';
 import type { ChannelRequestResponseLength } from './channelRequestResponseLength';
 
 export interface ChannelRequest {
+  provider?: ChannelRequestProvider;
   /** @minLength 1 */
   message: string;
   history?: ChannelMessage[];

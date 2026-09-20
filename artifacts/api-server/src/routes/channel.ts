@@ -1,10 +1,10 @@
 import { Router, type IRouter } from "express";
 import { ChannelKuczynskiBody, ChannelKuczynskiResponse } from "@workspace/api-zod";
 import { LENGTH_RULES, lengthInstruction, measureReply, replyMatchesLength } from "../lib/response-length";
+import { PROVIDERS, requestProviderAnswer } from "../lib/llm-providers";
 
 const router: IRouter = Router();
 
-const UPSTREAM_URL = "https://genius101.xyz/api/external/kuczynski";
 
 // Simple in-memory per-IP rate limiter: protects the shared upstream key quota
 // (upstream allows 30 req / 5 min for the whole key).
@@ -72,9 +72,11 @@ router.post("/channel", async (req, res): Promise<void> => {
     }
   }
 
-  const apiKey = process.env.KUCZYNSKI_BOT_API;
+  const provider = parsed.data.provider ?? "gemini";
+  const providerLabel = PROVIDERS[provider].label;
+  const apiKey = process.env[PROVIDERS[provider].secret];
   if (!apiKey) {
-    res.status(502).json({ error: "The Kuczynski bot API key is not configured." });
+    res.status(502).json({ error: `${providerLabel}'s API key is not configured.` });
     return;
   }
 
@@ -85,33 +87,22 @@ router.post("/channel", async (req, res): Promise<void> => {
     maxWords === 600 ? "elaborate" : maxWords === 1200 ? "detailed" : "normal"
   );
   const instruction = lengthInstruction(length, bullets);
-  const requestAnswer = (prompt: string) => fetch(UPSTREAM_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      message: prompt,
-      ...(history && history.length ? { history } : {}),
-      maxWords: LENGTH_RULES[length].maxWords,
-      ...(quotes !== undefined ? { quotes } : {}),
-    }),
-    signal: AbortSignal.timeout(120_000),
-  });
+  const requestAnswer = (prompt: string) => requestProviderAnswer(
+    provider, apiKey, prompt, history ?? [], LENGTH_RULES[length].maxWords, quotes,
+  );
 
   let upstream: Response;
   try {
     upstream = await requestAnswer(`${message}\n\n${instruction}`);
   } catch (err) {
-    req.log.error({ err }, "Failed to reach Genius 101");
-    res.status(502).json({ error: "Could not reach the Kuczynski bot. Please try again." });
+    req.log.error({ provider }, "Failed to reach selected AI provider");
+    res.status(502).json({ error: `Could not reach ${providerLabel}. Please try again.` });
     return;
   }
 
   if (upstream.status === 429) {
     res.status(429).json({
-      error: "The Kuczynski bot is rate-limited right now. Wait a moment and try again.",
+      error: `${providerLabel} is rate-limited or has exhausted its quota. Try again later or select another provider.`,
     });
     return;
   }
@@ -141,7 +132,7 @@ router.post("/channel", async (req, res): Promise<void> => {
       upstreamError === "Login required"
         ? "The Genius 101 app has not been republished with external API access yet."
         : upstreamError;
-    res.status(502).json({ error: `Kuczynski bot unavailable: ${hint}` });
+    res.status(502).json({ error: `${providerLabel} unavailable: ${hint}` });
     return;
   }
 

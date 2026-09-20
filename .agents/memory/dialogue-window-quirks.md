@@ -13,3 +13,9 @@ Answer-length compliance must preserve meaning rather than cutting off generated
 **Why:** Shortening an answer mechanically can remove qualifications or the actual conclusion; unlimited regeneration would also consume the shared upstream quota.
 
 **How to apply:** Prefer an explicit structure instruction and a bounded correction attempt. If generation still cannot comply, report that failure rather than presenting a mismatched answer as successful.
+
+Treat Gemini's model listing as discovery, not proof that a generation endpoint works.
+
+**Why:** In this environment a listed model returned 404 for generation, and the latest alias returned 503, while another explicitly listed model generated successfully with the same key.
+
+**How to apply:** Before declaring an integration active, confirm a real generation through the application's route, not merely a successful model-list or credential-presence check.

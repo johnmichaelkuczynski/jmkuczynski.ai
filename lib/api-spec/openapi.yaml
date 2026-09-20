@@ -427,6 +427,10 @@ components:
       type: object
       required: [message]
       properties:
+        provider:
+          type: string
+          enum: [gemini, perplexity, dr-k]
+          default: gemini
         message:
           type: string
           minLength: 1
