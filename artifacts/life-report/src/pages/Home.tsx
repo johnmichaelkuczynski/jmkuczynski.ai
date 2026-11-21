@@ -186,12 +186,12 @@ export function Home() {
         <div className="max-w-4xl space-y-8 relative z-10">
           <div className="space-y-4">
             <img
-              src={`${import.meta.env.BASE_URL}avatar.png`}
-              alt={`${profile.fullName}, AI courseware developer`}
+              src={`${import.meta.env.BASE_URL}cover-portrait.png`}
+              alt="Portrait of Dr. Kuczynski"
               width={144}
               height={144}
               fetchPriority="high"
-              className="w-28 h-28 md:w-36 md:h-36 object-cover border-2 border-primary/40 shadow-md animate-in fade-in duration-700"
+              className="w-28 h-28 md:w-36 md:h-36 object-cover object-top border-2 border-primary/40 shadow-md animate-in fade-in duration-700"
             />
             <h1 className="font-serif text-6xl md:text-8xl tracking-tight text-primary animate-in fade-in slide-in-from-bottom-8 duration-700">
               {profile.fullName}

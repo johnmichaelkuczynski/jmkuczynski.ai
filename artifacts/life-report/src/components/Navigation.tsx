@@ -5,6 +5,20 @@ import { cn } from '@/lib/utils';
 import { useDialogue } from '@/contexts/DialogueContext';
 import { trackEvent } from '@/lib/analytics';
 
+function ZhiSystemsLink() {
+  return (
+    <a
+      href="https://zhisystems.ai"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex flex-col items-center gap-1 text-foreground hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
+    >
+      <img src={`${import.meta.env.BASE_URL}zhi-logo.png`} alt="" width={55} height={55} className="size-10 md:size-[55px]" />
+      <span className="text-[11px] font-semibold tracking-widest">ZHI SYSTEMS</span>
+    </a>
+  );
+}
+
 export function Navigation({ children }: { children: ReactNode }) {
   const [location] = useLocation();
   const { openDialogue } = useDialogue();
@@ -42,6 +56,7 @@ export function Navigation({ children }: { children: ReactNode }) {
       {/* Desktop Sidebar */}
       <aside className="hidden md:flex flex-col w-64 border-r border-border shrink-0 fixed h-full bg-card">
         <div className="p-8 border-b border-border">
+          <div className="mb-4 flex justify-center"><ZhiSystemsLink /></div>
           <div className="flex items-center gap-2 font-serif text-2xl font-bold tracking-tight text-primary">
             <Archive className="w-6 h-6" />
             AI-Powered Courses
@@ -91,7 +106,8 @@ export function Navigation({ children }: { children: ReactNode }) {
       </aside>
 
       {/* Mobile Topbar */}
-      <header className="md:hidden flex items-center justify-between p-4 border-b border-border bg-card shrink-0">
+      <header className="md:hidden flex flex-wrap items-center justify-between gap-y-3 p-4 border-b border-border bg-card shrink-0">
+        <div className="flex w-full justify-center"><ZhiSystemsLink /></div>
         <div className="flex items-center gap-2 font-serif text-xl font-bold text-primary">
           <Archive className="w-5 h-5" />
           AI-Powered Courses
